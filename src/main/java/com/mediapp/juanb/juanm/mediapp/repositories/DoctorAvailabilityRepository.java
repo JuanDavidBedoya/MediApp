@@ -1,9 +1,11 @@
 package com.mediapp.juanb.juanm.mediapp.repositories;
 
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<com.mediapp.juanb.juanm.mediapp.entities.User, String> {
+public interface DoctorAvailabilityRepository extends JpaRepository<com.mediapp.juanb.juanm.mediapp.entities.DoctorAvailability, UUID> {
 
 }
