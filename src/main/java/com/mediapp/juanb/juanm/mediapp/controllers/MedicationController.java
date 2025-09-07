@@ -56,7 +56,7 @@ public class MedicationController {
     @DeleteMapping("/{id}")
     public ResponseEntity <Void> delete(@PathVariable("id") UUID id) {
        medicationService.delete(id);
-        return ResponseEntity.noContent().build();
+       return ResponseEntity.noContent().build();
     }
     
 

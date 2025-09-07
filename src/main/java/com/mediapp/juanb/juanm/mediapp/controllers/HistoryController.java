@@ -56,7 +56,7 @@ public class HistoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity <Void> delete(@PathVariable("id") UUID id) {
        historyService.delete(id);
-        return ResponseEntity.noContent().build();
+       return ResponseEntity.noContent().build();
     }
     
 

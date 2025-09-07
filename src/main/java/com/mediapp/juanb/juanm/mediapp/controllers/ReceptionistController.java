@@ -55,7 +55,7 @@ public class ReceptionistController {
     @DeleteMapping("/{cedula}")
     public ResponseEntity <Void> delete(@PathVariable("id") String cedula) {
        receptionistService.delete(cedula);
-        return ResponseEntity.noContent().build();
+       return ResponseEntity.noContent().build();
     }
     
 }

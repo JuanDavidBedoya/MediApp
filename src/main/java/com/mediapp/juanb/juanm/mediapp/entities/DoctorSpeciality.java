@@ -6,7 +6,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Especialidades_Doctor")
+@Table(name = "especialidadesDoctor")
 public class DoctorSpeciality {
 
     @ManyToOne

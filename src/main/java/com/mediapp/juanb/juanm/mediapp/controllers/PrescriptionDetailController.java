@@ -56,7 +56,7 @@ public class PrescriptionDetailController {
     @DeleteMapping("/{id}")
     public ResponseEntity <Void> delete(@PathVariable("id") UUID id) {
        prescriptionDetailService.delete(id);
-        return ResponseEntity.noContent().build();
+       return ResponseEntity.noContent().build();
     }
     
     
