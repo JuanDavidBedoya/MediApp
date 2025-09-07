@@ -21,8 +21,8 @@ public class Bill {
     private UUID idBill;
 
     @OneToOne
-    @JoinColumn(name = "idCita", referencedColumnName = "idCita", nullable = false)
-    private UUID idAppointment;
+    @JoinColumn(name = "idCita", referencedColumnName = "uuid", nullable = false)
+    private Appointment idAppointment;
 
     @Column(name="fecha")
     private Date date;
@@ -36,7 +36,7 @@ public class Bill {
     public Bill() {
     }
 
-    public Bill(UUID idBill, UUID idAppointment, Date date, double amount, String status) {
+    public Bill(UUID idBill, Appointment idAppointment, Date date, double amount, String status) {
         this.idBill = idBill;
         this.idAppointment = idAppointment;
         this.date = date;
@@ -52,11 +52,11 @@ public class Bill {
         this.idBill = idBill;
     }
 
-    public UUID getIdAppointment() {
+    public Appointment getIdAppointment() {
         return idAppointment;
     }
 
-    public void setIdAppointment(UUID idAppointment) {
+    public void setIdAppointment(Appointment idAppointment) {
         this.idAppointment = idAppointment;
     }
 

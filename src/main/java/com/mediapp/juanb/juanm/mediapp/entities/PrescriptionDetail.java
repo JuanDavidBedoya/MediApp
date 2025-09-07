@@ -20,12 +20,12 @@ public class PrescriptionDetail {
     private UUID idPrescriptionDDetail;
 
     @ManyToOne
-    @JoinColumn(name = "idPrescripcion", referencedColumnName = "idPrescripcion", nullable = false)
-    private UUID idPrescription;
+    @JoinColumn(name = "idPrescripcion", referencedColumnName = "idPrescription", nullable = false)
+    private Prescription idPrescription;
 
     @ManyToOne
-    @JoinColumn(name = "idMedicamento", referencedColumnName = "idMedicamento", nullable = false)
-    private UUID idMedication;
+    @JoinColumn(name = "idMedicamento", referencedColumnName = "idMedication", nullable = false)
+    private Medication idMedication;
 
     @Column(name="cantidad")
     private int quantity;
@@ -39,7 +39,7 @@ public class PrescriptionDetail {
     public PrescriptionDetail() {
     }
 
-    public PrescriptionDetail(UUID idPrescriptionDDetail, UUID idPrescription, UUID idMedication, int quantity,
+    public PrescriptionDetail(UUID idPrescriptionDDetail, Prescription idPrescription, Medication idMedication, int quantity,
             String frequency, String duration) {
         this.idPrescriptionDDetail = idPrescriptionDDetail;
         this.idPrescription = idPrescription;
@@ -57,19 +57,19 @@ public class PrescriptionDetail {
         this.idPrescriptionDDetail = idPrescriptionDDetail;
     }
 
-    public UUID getIdPrescription() {
+    public Prescription getIdPrescription() {
         return idPrescription;
     }
 
-    public void setIdPrescription(UUID idPrescription) {
+    public void setIdPrescription(Prescription idPrescription) {
         this.idPrescription = idPrescription;
     }
 
-    public UUID getIdMedication() {
+    public Medication getIdMedication() {
         return idMedication;
     }
 
-    public void setIdMedication(UUID idMedication) {
+    public void setIdMedication(Medication idMedication) {
         this.idMedication = idMedication;
     }
 

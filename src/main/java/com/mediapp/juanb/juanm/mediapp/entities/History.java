@@ -20,15 +20,13 @@ public class History {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID idHistory;
 
-    @Column(name="cedula")
-    private String cedulaPatient;
+    @ManyToOne
+    @JoinColumn(name = "cedulaPaciente", referencedColumnName = "cedula", nullable = false)
+    private Patient cedulaPatient;
     
     @ManyToOne
-    @JoinColumn(name = "cedula", referencedColumnName = "cedulaPacientes", nullable = false)
-    private Long idAppointment;
-
-    @ManyToOne
-    @JoinColumn(name = "cedula", referencedColumnName = "cedulaPacientes", nullable = false)
+    @JoinColumn(name = "idCita", referencedColumnName = "uuid", nullable = false)
+    private Appointment idAppointment;
 
     @Column(name="fecha")
     private Date date;
@@ -42,7 +40,7 @@ public class History {
     public History() {
     }
 
-    public History(UUID idHistory, String cedulaPatient, Long idAppointment, Date date, String diagnosis,
+    public History(UUID idHistory, Patient cedulaPatient, Appointment idAppointment, Date date, String diagnosis,
             String treatment, String description) {
         this.idHistory = idHistory;
         this.cedulaPatient = cedulaPatient;
@@ -61,19 +59,19 @@ public class History {
         this.idHistory = idHistory;
     }
 
-    public String getCedulaPatient() {
+    public Patient getCedulaPatient() {
         return cedulaPatient;
     }
 
-    public void setCedulaPatient(String cedulaPatient) {
+    public void setCedulaPatient(Patient cedulaPatient) {
         this.cedulaPatient = cedulaPatient;
     }
 
-    public Long getIdAppointment() {
+    public Appointment getIdAppointment() {
         return idAppointment;
     }
 
-    public void setIdAppointment(Long idAppointment) {
+    public void setIdAppointment(Appointment idAppointment) {
         this.idAppointment = idAppointment;
     }
 

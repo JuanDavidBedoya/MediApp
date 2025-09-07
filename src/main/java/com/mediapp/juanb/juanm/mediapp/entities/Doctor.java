@@ -1,31 +1,23 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
 
 @Entity
-@Table(name = "doctores")
 public class Doctor extends User {
 
-    @OneToOne(mappedBy = "doctor")
-    @JoinColumn(name = "cedula_doctor")
-    private User user;
+    @OneToMany
+    @JoinTable(name = "doctor_especialidad",
+        joinColumns = @JoinColumn(name = "cedula_doctor", referencedColumnName = "cedula"),
+        inverseJoinColumns = @JoinColumn(name = "id_especialidad", referencedColumnName = "uuid"))
+    private List<Speciality> specialties;
 
     public Doctor() {
         super();
     }
-
-    public Doctor(User user) {
-        this.user = user;
-    } 
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+    
 }

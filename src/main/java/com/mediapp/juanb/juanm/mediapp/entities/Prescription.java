@@ -21,8 +21,8 @@ public class Prescription {
     private UUID idPrescription;
 
     @OneToOne
-    @JoinColumn(name = "idCita", referencedColumnName = "idCita", nullable = false)
-    private UUID idAppointment;
+    @JoinColumn(name = "idCita", referencedColumnName = "uuid", nullable = false)
+    private Appointment idAppointment;
 
     @Column(name="fecha")
     private Date date;
@@ -33,7 +33,7 @@ public class Prescription {
     public Prescription() {
     }
 
-    public Prescription(UUID idPrescription, UUID idAppointment, Date date, String instructions) {
+    public Prescription(UUID idPrescription, Appointment idAppointment, Date date, String instructions) {
         this.idPrescription = idPrescription;
         this.idAppointment = idAppointment;
         this.date = date;
@@ -48,11 +48,11 @@ public class Prescription {
         this.idPrescription = idPrescription;
     }
 
-    public UUID getIdAppointment() {
+    public Appointment getIdAppointment() {
         return idAppointment;
     }
 
-    public void setIdAppointment(UUID idAppointment) {
+    public void setIdAppointment(Appointment idAppointment) {
         this.idAppointment = idAppointment;
     }
 
