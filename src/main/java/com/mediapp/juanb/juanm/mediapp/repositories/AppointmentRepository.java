@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.mediapp.juanb.juanm.mediapp.entities.AvailabilityDetail;
+import com.mediapp.juanb.juanm.mediapp.entities.Appointment;
 
 @Repository
-public interface AvailabilityDetailRepository extends JpaRepository<AvailabilityDetail, UUID> {
+public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
 
 }

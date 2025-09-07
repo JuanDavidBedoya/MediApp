@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "recepcionistas")
-public class Receptionist {
+public class Receptionist extends User{
     @OneToOne(mappedBy = "receptionist")
     @JoinColumn(name = "cedula_recepcionista")
     private User user;
