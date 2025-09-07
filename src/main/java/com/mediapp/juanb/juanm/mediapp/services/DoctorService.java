@@ -34,7 +34,7 @@ public class DoctorService {
     }
 
     public Doctor update(String cedula, Doctor doctor) {
-        doctor.setId(cedula);
+        doctor.setCedula(cedula);
         return doctorRepository.save(doctor);
     }
 }

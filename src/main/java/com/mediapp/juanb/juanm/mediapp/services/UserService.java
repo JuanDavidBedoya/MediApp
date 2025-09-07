@@ -34,7 +34,7 @@ public class UserService {
     }
 
     public User update(String cedula, User user) {
-        user.setId(cedula);
+        user.setCedula(cedula);
         return userRepository.save(user);
     }
 }
