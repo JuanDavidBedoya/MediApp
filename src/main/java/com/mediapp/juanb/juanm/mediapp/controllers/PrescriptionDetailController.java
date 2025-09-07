@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("detallerPrescripcion")
+@RequestMapping("/detallerPrescripcion")
 public class PrescriptionDetailController {
 
     private PrescriptionDetailService prescriptionDetailService;

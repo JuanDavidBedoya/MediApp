@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("recepcionistas")
+@RequestMapping("/recepcionistas")
 public class ReceptionistController {
 
     private ReceptionistService receptionistService;

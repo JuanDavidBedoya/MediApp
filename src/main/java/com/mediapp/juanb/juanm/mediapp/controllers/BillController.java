@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("facturas")
+@RequestMapping("/facturas")
 public class BillController {
 
     private BillService billService;

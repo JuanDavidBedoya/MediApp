@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("historiales")
+@RequestMapping("/historiales")
 public class HistoryController {
 
     private HistoryService historyService;
