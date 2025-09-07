@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="historiales")
-public class Histories {
+public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,10 +39,10 @@ public class Histories {
     @Column(name="descripcion")
     private String description;
 
-    public Histories() {
+    public History() {
     }
 
-    public Histories(UUID idHistory, String cedulaPatient, Long idAppointment, LocalDate date, String diagnosis,
+    public History(UUID idHistory, String cedulaPatient, Long idAppointment, LocalDate date, String diagnosis,
             String treatment, String description) {
         this.idHistory = idHistory;
         this.cedulaPatient = cedulaPatient;
