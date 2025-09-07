@@ -129,9 +129,4 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
-
-    public void setId(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setId'");
-    }
 }
