@@ -1,6 +1,6 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -31,7 +31,7 @@ public class History {
     @JoinColumn(name = "cedula", referencedColumnName = "cedulaPacientes", nullable = false)
 
     @Column(name="fecha")
-    private LocalDate date;
+    private Date date;
     @Column(name="diagnostico")
     private String diagnosis;
     @Column(name="tratamiento")
@@ -42,7 +42,7 @@ public class History {
     public History() {
     }
 
-    public History(UUID idHistory, String cedulaPatient, Long idAppointment, LocalDate date, String diagnosis,
+    public History(UUID idHistory, String cedulaPatient, Long idAppointment, Date date, String diagnosis,
             String treatment, String description) {
         this.idHistory = idHistory;
         this.cedulaPatient = cedulaPatient;
@@ -77,11 +77,11 @@ public class History {
         this.idAppointment = idAppointment;
     }
 
-    public LocalDate getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 

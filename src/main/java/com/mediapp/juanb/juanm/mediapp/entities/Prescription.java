@@ -1,6 +1,6 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -25,7 +25,7 @@ public class Prescription {
     private UUID idAppointment;
 
     @Column(name="fecha")
-    private LocalDate date;
+    private Date date;
     
     @Column(name="instrucciones")
     private String instructions;
@@ -33,7 +33,7 @@ public class Prescription {
     public Prescription() {
     }
 
-    public Prescription(UUID idPrescription, UUID idAppointment, LocalDate date, String instructions) {
+    public Prescription(UUID idPrescription, UUID idAppointment, Date date, String instructions) {
         this.idPrescription = idPrescription;
         this.idAppointment = idAppointment;
         this.date = date;
@@ -56,11 +56,11 @@ public class Prescription {
         this.idAppointment = idAppointment;
     }
 
-    public LocalDate getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 

@@ -1,6 +1,6 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -25,7 +25,7 @@ public class Bill {
     private UUID idAppointment;
 
     @Column(name="fecha")
-    private LocalDate date;
+    private Date date;
 
     @Column(name="monto")
     private double amount;
@@ -36,7 +36,7 @@ public class Bill {
     public Bill() {
     }
 
-    public Bill(UUID idBill, UUID idAppointment, LocalDate date, double amount, String status) {
+    public Bill(UUID idBill, UUID idAppointment, Date date, double amount, String status) {
         this.idBill = idBill;
         this.idAppointment = idAppointment;
         this.date = date;
@@ -60,11 +60,11 @@ public class Bill {
         this.idAppointment = idAppointment;
     }
 
-    public LocalDate getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
