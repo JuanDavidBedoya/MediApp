@@ -21,7 +21,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> findById(String cedula) {
+    public Optional<User> findByCedula(String cedula) {
         return userRepository.findById(cedula);
     }
 

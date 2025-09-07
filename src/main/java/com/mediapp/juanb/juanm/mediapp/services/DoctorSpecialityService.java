@@ -1,7 +1,6 @@
 package com.mediapp.juanb.juanm.mediapp.services;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -22,10 +21,6 @@ public class DoctorSpecialityService {
 
     public List<DoctorSpeciality> findAll() {
         return doctorSpecialityRepository.findAll();
-    }
-
-    public Optional<DoctorSpeciality> findById(String id) {
-        return doctorSpecialityRepository.findById(id);
     }
 
     public DoctorSpeciality save(DoctorSpeciality doctorSpeciality) {
