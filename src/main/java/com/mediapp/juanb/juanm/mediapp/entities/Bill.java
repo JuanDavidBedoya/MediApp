@@ -3,61 +3,55 @@ package com.mediapp.juanb.juanm.mediapp.entities;
 import java.sql.Date;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name="facturas")
+@Table(name = "facturas")
 public class Bill {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID idBill;
+    @Column(name = "uuid_bill")
+    private UUID uuidBill;
 
     @OneToOne
-    @JoinColumn(name = "idCita", referencedColumnName = "uuid", nullable = false)
-    private Appointment idAppointment;
+    @JoinColumn(name = "uuid_appointment", referencedColumnName = "uuid_appointment", nullable = false)
+    private Appointment appointment;
 
-    @Column(name="fecha")
+    @Column(name = "date", nullable = false)
     private Date date;
 
-    @Column(name="monto")
+    @Column(name = "amount", nullable = false)
     private double amount;
 
-    @Column(name="estado")
+    @Column(name = "status", nullable = false)
     private String status;
 
     public Bill() {
     }
 
-    public Bill(UUID idBill, Appointment idAppointment, Date date, double amount, String status) {
-        this.idBill = idBill;
-        this.idAppointment = idAppointment;
+    public Bill(UUID uuidBill, Appointment appointment, Date date, double amount, String status) {
+        this.uuidBill = uuidBill;
+        this.appointment = appointment;
         this.date = date;
         this.amount = amount;
         this.status = status;
     }
 
-    public UUID getIdBill() {
-        return idBill;
+    public UUID getUuidBill() {
+        return uuidBill;
     }
 
-    public void setIdBill(UUID idBill) {
-        this.idBill = idBill;
+    public void setUuidBill(UUID uuidBill) {
+        this.uuidBill = uuidBill;
     }
 
-    public Appointment getIdAppointment() {
-        return idAppointment;
+    public Appointment getAppointment() {
+        return appointment;
     }
 
-    public void setIdAppointment(Appointment idAppointment) {
-        this.idAppointment = idAppointment;
+    public void setAppointment(Appointment appointment) {
+        this.appointment = appointment;
     }
 
     public Date getDate() {
@@ -83,5 +77,4 @@ public class Bill {
     public void setStatus(String status) {
         this.status = status;
     }
-    
 }

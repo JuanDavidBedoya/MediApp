@@ -1,51 +1,46 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "disponibilidadDoctor")
+@Table(name = "disponibilidad_doctor")
 public class DoctorAvailability {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuid;
+    @Column(name = "uuid_doctor_availability")
+    private UUID uuidDoctorAvailability;
+
     @ManyToOne
-    @JoinColumn(name = "cedula_doctor")
-    private Doctor doctor;
-    @Column(name = "descripcion")
+    @JoinColumn(name = "cedula_doctor", referencedColumnName = "cedula")
+    private User doctor;
+
+    @Column(name = "description", nullable = false)
     private String description;
-    
+
     public DoctorAvailability() {
     }
 
-    public DoctorAvailability(UUID uuid, Doctor doctor, String description) {
-        this.uuid = uuid;
+    public DoctorAvailability(UUID uuidDoctorAvailability, User doctor, String description) {
+        this.uuidDoctorAvailability = uuidDoctorAvailability;
         this.doctor = doctor;
         this.description = description;
     }
 
     public UUID getUuid() {
-        return uuid;
+        return uuidDoctorAvailability;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setUuid(UUID uuidDoctorAvailability) {
+        this.uuidDoctorAvailability = uuidDoctorAvailability;
     }
 
-    public Doctor getDoctor() {
+    public User getDoctor() {
         return doctor;
     }
 
-    public void setDoctor(Doctor doctor) {
+    public void setDoctor(User doctor) {
         this.doctor = doctor;
     }
 

@@ -1,50 +1,48 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "detallesDisponibilidad")
+@Table(name = "detalles_disponibilidad")
 public class AvailabilityDetail {
 
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
-    private UUID uuid;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "uuid_availability_detail")
+    private UUID uuidAvailabilityDetail;
+
     @ManyToOne
-    @JoinColumn(name = "id_disponibilidad")
+    @JoinColumn(name = "id_availability", referencedColumnName = "uuid_doctor_availability")
     private DoctorAvailability doctorAvailability;
-    @Column(name = "dia_semana")
+
+    @Column(name = "weekday", nullable = false)
     private String weekDay;
-    @Column(name = "hora_inicio")
+
+    @Column(name = "start_time", nullable = false)
     private String startTime;
-    @Column(name = "hora_fin")
+
+    @Column(name = "end_time", nullable = false)
     private String endTime;
 
     public AvailabilityDetail() {
     }
 
-    public AvailabilityDetail(UUID uuid, DoctorAvailability doctorAvailability, String weekDay, String startTime,
+    public AvailabilityDetail(UUID uuidAvailabilityDetail, DoctorAvailability doctorAvailability, String weekDay, String startTime,
             String endTime) {
-        this.uuid = uuid;
+        this.uuidAvailabilityDetail = uuidAvailabilityDetail;
         this.doctorAvailability = doctorAvailability;
         this.weekDay = weekDay;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public UUID getUuidAvailabilityDetail() {
+        return uuidAvailabilityDetail;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setUuidAvailabilityDetail(UUID uuidAvailabilityDetail) {
+        this.uuidAvailabilityDetail = uuidAvailabilityDetail;
     }
 
     public DoctorAvailability getDoctorAvailability() {

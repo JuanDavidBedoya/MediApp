@@ -2,58 +2,51 @@ package com.mediapp.juanb.juanm.mediapp.entities;
 
 import java.sql.Date;
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table (name= "prescripciones")
+@Table(name = "prescripciones")
 public class Prescription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID idPrescription;
+    @Column(name = "uuid_prescription")
+    private UUID uuidPrescription;
 
     @OneToOne
-    @JoinColumn(name = "idCita", referencedColumnName = "uuid", nullable = false)
-    private Appointment idAppointment;
+    @JoinColumn(name = "uuid_appointment", referencedColumnName = "uuid_appointment", nullable = false)
+    private Appointment appointment;
 
-    @Column(name="fecha")
+    @Column(name = "date", nullable = false)
     private Date date;
     
-    @Column(name="instrucciones")
+    @Column(name = "instructions", nullable = false)
     private String instructions;
 
     public Prescription() {
     }
 
-    public Prescription(UUID idPrescription, Appointment idAppointment, Date date, String instructions) {
-        this.idPrescription = idPrescription;
-        this.idAppointment = idAppointment;
+    public Prescription(UUID uuidPrescription, Appointment appointment, Date date, String instructions) {
+        this.uuidPrescription = uuidPrescription;
+        this.appointment = appointment;
         this.date = date;
         this.instructions = instructions;
     }
 
-    public UUID getIdPrescription() {
-        return idPrescription;
+    public UUID getUuidPrescription() {
+        return uuidPrescription;
     }
 
-    public void setIdPrescription(UUID idPrescription) {
-        this.idPrescription = idPrescription;
+    public void setUuidPrescription(UUID uuidPrescription) {
+        this.uuidPrescription = uuidPrescription;
     }
 
-    public Appointment getIdAppointment() {
-        return idAppointment;
+    public Appointment getAppointment() {
+        return appointment;
     }
 
-    public void setIdAppointment(Appointment idAppointment) {
-        this.idAppointment = idAppointment;
+    public void setAppointment(Appointment appointment) {
+        this.appointment = appointment;
     }
 
     public Date getDate() {
@@ -71,5 +64,4 @@ public class Prescription {
     public void setInstructions(String instructions) {
         this.instructions = instructions;
     }
-  
 }

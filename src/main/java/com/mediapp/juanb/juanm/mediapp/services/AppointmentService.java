@@ -34,7 +34,7 @@ public class AppointmentService {
     }
 
     public Appointment update(java.util.UUID uuid, Appointment appointment) {
-        appointment.setUuid(uuid);
+        appointment.setUuidAppointment(uuid);
         return appointmentRepository.save(appointment);
     }
 }

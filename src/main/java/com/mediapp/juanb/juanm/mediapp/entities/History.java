@@ -3,76 +3,73 @@ package com.mediapp.juanb.juanm.mediapp.entities;
 import java.sql.Date;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name="historiales")
+@Table(name = "histories")
 public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID idHistory;
+    @Column(name = "uuid_history")
+    private UUID uuidHistory;
 
     @ManyToOne
-    @JoinColumn(name = "cedulaPaciente", referencedColumnName = "cedula", nullable = false)
-    private Patient cedulaPatient;
-    
-    @ManyToOne
-    @JoinColumn(name = "idCita", referencedColumnName = "uuid", nullable = false)
-    private Appointment idAppointment;
+    @JoinColumn(name = "cedula", referencedColumnName = "cedula", nullable = false)
+    private User patient;
 
-    @Column(name="fecha")
+    @ManyToOne
+    @JoinColumn(name = "uuid_appointment", referencedColumnName = "uuid_appointment", nullable = false)
+    private Appointment appointment;
+
+    @Column(name = "date", nullable = false)
     private Date date;
-    @Column(name="diagnostico")
+
+    @Column(name = "diagnosis")
     private String diagnosis;
-    @Column(name="tratamiento")
+
+    @Column(name = "tratamiento")
     private String treatment;
-    @Column(name="descripcion")
+
+    @Column(name = "description")
     private String description;
 
     public History() {
     }
 
-    public History(UUID idHistory, Patient cedulaPatient, Appointment idAppointment, Date date, String diagnosis,
+    public History(UUID uuidHistory, User patient, Appointment appointment, Date date, String diagnosis,
             String treatment, String description) {
-        this.idHistory = idHistory;
-        this.cedulaPatient = cedulaPatient;
-        this.idAppointment = idAppointment;
+        this.uuidHistory = uuidHistory;
+        this.patient = patient;
+        this.appointment = appointment;
         this.date = date;
         this.diagnosis = diagnosis;
         this.treatment = treatment;
         this.description = description;
     }
 
-    public UUID getIdHistory() {
-        return idHistory;
+    public UUID getUuidHistory() {
+        return uuidHistory;
     }
 
-    public void setIdHistory(UUID idHistory) {
-        this.idHistory = idHistory;
+    public void setUuidHistory(UUID uuidHistory) {
+        this.uuidHistory = uuidHistory;
     }
 
-    public Patient getCedulaPatient() {
-        return cedulaPatient;
+    public User getPatient() {
+        return patient;
     }
 
-    public void setCedulaPatient(Patient cedulaPatient) {
-        this.cedulaPatient = cedulaPatient;
+    public void setPatient(User patient) {
+        this.patient = patient;
     }
 
-    public Appointment getIdAppointment() {
-        return idAppointment;
+    public Appointment getAppointment() {
+        return appointment;
     }
 
-    public void setIdAppointment(Appointment idAppointment) {
-        this.idAppointment = idAppointment;
+    public void setAppointment(Appointment appointment) {
+        this.appointment = appointment;
     }
 
     public Date getDate() {
@@ -106,5 +103,4 @@ public class History {
     public void setDescription(String description) {
         this.description = description;
     }
-    
 }

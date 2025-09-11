@@ -23,7 +23,7 @@ public class HistoryService {
     }
 
     public History update(UUID id, History histories) {
-        histories.setIdHistory(id);
+        histories.setUuidHistory(id);
         return historiesRepository.save(histories);
     }
 

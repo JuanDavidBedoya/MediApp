@@ -35,7 +35,7 @@ public class AvailabilityDetailService {
     }
 
     public AvailabilityDetail update(UUID uuid, AvailabilityDetail availabilityDetail) {
-        availabilityDetail.setUuid(uuid);
+        availabilityDetail.setUuidAvailabilityDetail(uuid);
         return availabilityDetailRepository.save(availabilityDetail);
     }
 }

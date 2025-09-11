@@ -1,76 +1,69 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table (name="detallePrescripcion")
+@Table(name = "detalles_prescripciones")
 public class PrescriptionDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID idPrescriptionDDetail;
+    @Column(name = "uuid_prescription_detail")
+    private UUID uuidPrescriptionDetail;
 
     @ManyToOne
-    @JoinColumn(name = "idPrescripcion", referencedColumnName = "idPrescription", nullable = false)
-    private Prescription idPrescription;
+    @JoinColumn(name = "uuid_prescription", referencedColumnName = "uuid_prescription", nullable = false)
+    private Prescription prescription;
 
     @ManyToOne
-    @JoinColumn(name = "idMedicamento", referencedColumnName = "idMedication", nullable = false)
-    private Medication idMedication;
+    @JoinColumn(name = "uuid_medication", referencedColumnName = "uuid_medication", nullable = false)
+    private Medication medication;
 
-    @Column(name="cantidad")
+    @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @Column(name="frecuencia")
+    @Column(name = "frequency", nullable = false)
     private String frequency;
 
-    @Column(name="duracion")
+    @Column(name = "duration", nullable = false)
     private String duration;
 
     public PrescriptionDetail() {
     }
 
-    public PrescriptionDetail(UUID idPrescriptionDDetail, Prescription idPrescription, Medication idMedication, int quantity,
-            String frequency, String duration) {
-        this.idPrescriptionDDetail = idPrescriptionDDetail;
-        this.idPrescription = idPrescription;
-        this.idMedication = idMedication;
+    public PrescriptionDetail(UUID uuidPrescriptionDetail, Prescription prescription, Medication medication, int quantity,
+                              String frequency, String duration) {
+        this.uuidPrescriptionDetail = uuidPrescriptionDetail;
+        this.prescription = prescription;
+        this.medication = medication;
         this.quantity = quantity;
         this.frequency = frequency;
         this.duration = duration;
     }
 
-    public UUID getIdPrescriptionDDetail() {
-        return idPrescriptionDDetail;
+    public UUID getUuidPrescriptionDetail() {
+        return uuidPrescriptionDetail;
     }
 
-    public void setIdPrescriptionDDetail(UUID idPrescriptionDDetail) {
-        this.idPrescriptionDDetail = idPrescriptionDDetail;
+    public void setUuidPrescriptionDetail(UUID uuidPrescriptionDetail) {
+        this.uuidPrescriptionDetail = uuidPrescriptionDetail;
     }
 
-    public Prescription getIdPrescription() {
-        return idPrescription;
+    public Prescription getPrescription() {
+        return prescription;
     }
 
-    public void setIdPrescription(Prescription idPrescription) {
-        this.idPrescription = idPrescription;
+    public void setPrescription(Prescription prescription) {
+        this.prescription = prescription;
     }
 
-    public Medication getIdMedication() {
-        return idMedication;
+    public Medication getMedication() {
+        return medication;
     }
 
-    public void setIdMedication(Medication idMedication) {
-        this.idMedication = idMedication;
+    public void setMedication(Medication medication) {
+        this.medication = medication;
     }
 
     public int getQuantity() {
@@ -95,6 +88,5 @@ public class PrescriptionDetail {
 
     public void setDuration(String duration) {
         this.duration = duration;
-    } 
-    
+    }
 }

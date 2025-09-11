@@ -23,7 +23,7 @@ public class BillService {
     }
 
     public Bill update(UUID id, Bill bill) {
-        bill.setIdBill(id);
+        bill.setUuidBill(id);
         return billRepository.save(bill);
     }
 

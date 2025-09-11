@@ -23,7 +23,7 @@ public class PrescriptionDetailService {
     }
 
     public PrescriptionDetail update(UUID id, PrescriptionDetail prescriptionDetail) {
-        prescriptionDetail.setIdPrescriptionDDetail(id);
+        prescriptionDetail.setUuidPrescriptionDetail(id);
         return prescriptionDetailRepository.save(prescriptionDetail);
     }
 

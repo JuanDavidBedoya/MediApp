@@ -1,51 +1,50 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
 import java.util.UUID;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table (name="Medicamentos")
+@Table(name = "medicamentos")
 public class Medication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID idMedication;
+    @Column(name = "uuid_medication")
+    private UUID uuidMedication;
 
-    @Column(name="cantidad")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name="descripcion")
+    @Column(name = "description")
     private String description;
 
-    @Column(name="dosis")
+    @Column(name = "dosage")
     private String dosage;
 
-    @Column(name="presentacion")
+    @Column(name = "presentation")
     private String presentation;
+
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
 
     public Medication() {
     }
 
-    public Medication(UUID idMedication, String name, String description, String dosage, String presentation) {
-        this.idMedication = idMedication;
+    public Medication(UUID uuidMedication, String name, String description, String dosage, String presentation, Integer quantity) {
+        this.uuidMedication = uuidMedication;
         this.name = name;
         this.description = description;
         this.dosage = dosage;
         this.presentation = presentation;
+        this.quantity = quantity;
     }
 
-    public UUID getIdMedication() {
-        return idMedication;
+    public UUID getUuidMedication() {
+        return uuidMedication;
     }
 
-    public void setIdMedication(UUID idMedication) {
-        this.idMedication = idMedication;
+    public void setUuidMedication(UUID uuidMedication) {
+        this.uuidMedication = uuidMedication;
     }
 
     public String getName() {
@@ -80,5 +79,11 @@ public class Medication {
         this.presentation = presentation;
     }
 
-}
+    public Integer getQuantity() {
+        return quantity;
+    }
 
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+}

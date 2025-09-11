@@ -23,7 +23,7 @@ public class MedicationService {
     }
 
     public Medication update(UUID id, Medication medication) {
-        medication.setIdMedication(id);
+        medication.setUuidMedication(id);
         return medicationRepository.save(medication);
     }
 
