@@ -28,7 +28,7 @@ public class History {
     @Column(name = "diagnosis")
     private String diagnosis;
 
-    @Column(name = "tratamiento")
+    @Column(name = "treatment")
     private String treatment;
 
     @Column(name = "description")
