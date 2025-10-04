@@ -1,65 +1,61 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
-import java.util.Date;
-import java.util.UUID;
-
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.Date;
 
 @Entity
-@Table(name = "citas")
+@Table(name = "appointments")
 public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "uuid_appointment")
-    private UUID uuidAppointment;
+    @Column(name = "id_appointment", updatable = false, nullable = false, unique = true)
+    private UUID idAppointment;
 
     @ManyToOne
-    @JoinColumn(name = "cedula_patient", nullable = false)
+    @JoinColumn(name = "cedula_doctor")
+    private Doctor doctor;
+
+    @ManyToOne
+    @JoinColumn(name = "cedula_patient")
     private User patient;
 
-    @ManyToOne
-    @JoinColumn(name = "cedula_doctor", nullable = false)
-    private User doctor;
+    @OneToMany(mappedBy = "appointment")
+    private List<Formula> formulas = new ArrayList<>();
 
+    @Column(name = "date", nullable = false)
     @Temporal(TemporalType.DATE)
-    @Column(name = "appointment_date", nullable = false)
-    private Date appointmentDate;
+    private Date date;
 
-    @Temporal(TemporalType.TIME)
-    @Column(name = "appointment_time", nullable = false)
-    private Date appointmentTime;
+    @Column(name = "observations", length = 1000)
+    private String observations;
 
-    @Column(name = "office", nullable = false)
-    private String office;
+    public Appointment() {}
 
-    @Column(name = "status", nullable = false)
-    private String status;
-
-    @Column(name = "description")
-    private String description;
-
-    public Appointment() {
-    }
-
-    public Appointment(UUID uuidAppointment, User patient, User doctor, Date appointmentDate, Date appointmentTime,
-            String office, String status, String description) {
-        this.uuidAppointment = uuidAppointment;
-        this.patient = patient;
+    public Appointment(Doctor doctor, User patient, Date date, String observations) {
         this.doctor = doctor;
-        this.appointmentDate = appointmentDate;
-        this.appointmentTime = appointmentTime;
-        this.office = office;
-        this.status = status;
-        this.description = description;
+        this.patient = patient;
+        this.date = date;
+        this.observations = observations;
     }
 
-    public UUID getUuidAppointment() {
-        return uuidAppointment;
+    public UUID getIdAppointment() {
+        return idAppointment;
     }
 
-    public void setUuidAppointment(UUID uuidAppointment) {
-        this.uuidAppointment = uuidAppointment;
+    public void setIdAppointment(UUID idAppointment) {
+        this.idAppointment = idAppointment;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
     }
 
     public User getPatient() {
@@ -70,51 +66,27 @@ public class Appointment {
         this.patient = patient;
     }
 
-    public User getDoctor() {
-        return doctor;
+    public List<Formula> getFormulas() {
+        return formulas;
     }
 
-    public void setDoctor(User doctor) {
-        this.doctor = doctor;
+    public void setFormulas(List<Formula> formulas) {
+        this.formulas = formulas;
     }
 
-    public Date getAppointmentDate() {
-        return appointmentDate;
+    public Date getDate() {
+        return date;
     }
 
-    public void setAppointmentDate(Date appointmentDate) {
-        this.appointmentDate = appointmentDate;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
-    public Date getAppointmentTime() {
-        return appointmentTime;
+    public String getObservations() {
+        return observations;
     }
 
-    public void setAppointmentTime(Date appointmentTime) {
-        this.appointmentTime = appointmentTime;
-    }
-
-    public String getOffice() {
-        return office;
-    }
-
-    public void setOffice(String office) {
-        this.office = office;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setObservations(String observations) {
+        this.observations = observations;
     }
 }

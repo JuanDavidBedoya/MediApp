@@ -4,10 +4,9 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.mediapp.juanb.juanm.mediapp.entities.AvailabilityDetail;
+import com.mediapp.juanb.juanm.mediapp.entities.Formula;
 
 @Repository
-public interface AvailabilityDetailRepository extends JpaRepository<AvailabilityDetail, UUID> {
+public interface FormulaRepository extends JpaRepository <Formula, UUID>{
 
 }

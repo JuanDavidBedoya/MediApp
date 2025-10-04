@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.mediapp.juanb.juanm.mediapp.entities.DoctorAvailability;
+import com.mediapp.juanb.juanm.mediapp.entities.Eps;
 
 @Repository
-public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvailability, UUID> {
+public interface EpsRepository extends JpaRepository<Eps, UUID> {
 
 }

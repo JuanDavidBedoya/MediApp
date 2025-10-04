@@ -14,30 +14,28 @@ public class MedicationService {
 
     private MedicationRepository medicationRepository;
 
-    public MedicationService(MedicationRepository medicationRepository){
+    public MedicationService(MedicationRepository medicationRepository) {
         this.medicationRepository = medicationRepository;
-    }
-
-    public Medication save(Medication medication) {
-        return medicationRepository.save(medication);
-    }
-
-    public Medication update(UUID id, Medication medication) {
-        medication.setUuidMedication(id);
-        return medicationRepository.save(medication);
     }
 
     public List<Medication> findAll() {
         return medicationRepository.findAll();
     }
 
-    public Optional <Medication> findById(UUID id) {
-        return medicationRepository.findById(id);
-    
-    }   
-    
-    public void delete(UUID id) {
-        medicationRepository.deleteById(id);
+    public Optional<Medication> findById(UUID uuid) {
+        return medicationRepository.findById(uuid);
     }
 
+    public Medication save(Medication medication) {
+        return medicationRepository.save(medication);
+    }
+
+    public void delete(UUID uuid) {
+        medicationRepository.deleteById(uuid);
+    }
+
+    public Medication update(UUID uuid, Medication medication) {
+        medication.setIdMedication(uuid);
+        return medicationRepository.save(medication);
+    }
 }

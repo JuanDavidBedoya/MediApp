@@ -1,37 +1,37 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
+import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import jakarta.persistence.*;
 
 @Entity
-@Table(name = "especialidades")
+@Table(name = "specialities")
 public class Speciality {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuidSpeciality;
+    @Column(name = "id_speciality", updatable = false, nullable = false, unique = true)
+    private UUID idSpeciality;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "specialties")
-    private List<User> doctors;
+    @OneToMany(mappedBy = "speciality")
+    private List<Doctor> doctors = new ArrayList<>();
 
-    public Speciality() {
-    }
+    public Speciality() {}
 
-    public Speciality(UUID uuidSpeciality, String name) {
-        this.uuidSpeciality = uuidSpeciality;
+    public Speciality(String name) {
         this.name = name;
     }
 
-    public UUID getUuid() {
-        return uuidSpeciality;
+    public UUID getIdSpeciality() {
+        return idSpeciality;
     }
 
-    public void setId(UUID uuidSpeciality) {
-        this.uuidSpeciality = uuidSpeciality;
+    public void setIdSpeciality(UUID idSpeciality) {
+        this.idSpeciality = idSpeciality;
     }
 
     public String getName() {
@@ -40,5 +40,13 @@ public class Speciality {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Doctor> getDoctors() {
+        return doctors;
+    }
+
+    public void setDoctors(List<Doctor> doctors) {
+        this.doctors = doctors;
     }
 }

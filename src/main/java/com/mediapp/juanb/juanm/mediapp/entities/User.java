@@ -1,144 +1,100 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
 @Entity
-@Table(name = "usuarios")
+@Table(name = "users")
 public class User {
 
     @Id
+    @Column(name = "cedula", nullable = false, unique = true)
     private String cedula;
 
-    @Column(name = "firstName", nullable = false)
-    private String firstName;
-
-    @Column(name = "lastName", nullable = false)
-    private String lastName;
-
-    @Column(name = "birth_date")
-    private LocalDate birthDate;
-
-    @Column(name = "gender")
-    private String gender;
-
-    @Column(name = "phone")
-    private String phone;
-
-    @Column(name = "email", unique = true)
-    private String email;
-
-    @Column(name = "address")
-    private String address;
-
-    @Column(name = "password")
-    private String password;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @ManyToOne
-    @JoinColumn(name = "id_role", referencedColumnName = "idRole", nullable = false)
-    private Role role;
+    @JoinColumn(name = "city")
+    private City city;
 
-    @ManyToMany
-    @JoinTable(
-    name = "doctor_especialidad",
-    joinColumns = @JoinColumn(name = "cedula_doctor", referencedColumnName = "cedula"),
-    inverseJoinColumns = @JoinColumn(name = "id_especialidad", referencedColumnName = "uuidSpeciality")
-)
-private List<Speciality> specialties;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @ManyToOne
+    @JoinColumn(name = "eps")
+    private Eps eps;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserPhone> userPhones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "patient")
+    private List<Appointment> appointments = new ArrayList<>();
 
     public User() {}
 
-    public User(String cedula, String firstName, String lastName, LocalDate birthDate, String gender, String phone,
-            String email, String address, String password, Role role) {
+    public User(String cedula, String name, City city, String email, Eps eps) {
         this.cedula = cedula;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.birthDate = birthDate;
-        this.gender = gender;
-        this.phone = phone;
+        this.name = name;
+        this.city = city;
         this.email = email;
-        this.address = address;
-        this.password = password;
-        this.role = role;
+        this.eps = eps;
     }
 
-    public String getCedula() { 
-        return cedula; 
+    public String getCedula() {
+        return cedula;
     }
 
-    public void setCedula(String cedula) { 
-        this.cedula = cedula; 
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
     }
 
-    public String getFirstName() { 
-        return firstName; 
-    }
-    public void setFirstName(String firstName) { 
-        this.firstName = firstName; 
+    public String getName() {
+        return name;
     }
 
-    public String getLastName() { 
-        return lastName; 
-    }
-    public void setLastName(String lastName) { 
-        this.lastName = lastName; 
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public LocalDate getBirthDate() {
-        return birthDate; 
-    }
-    public void setBirthDate(LocalDate birthDate) { 
-        this.birthDate = birthDate; 
+    public City getCity() {
+        return city;
     }
 
-    public String getGender() { 
-        return gender; 
-    }
-    public void setGender(String gender) { 
-        this.gender = gender; 
+    public void setCity(City city) {
+        this.city = city;
     }
 
-    public String getPhone() { 
-        return phone; 
-    }
-    public void setPhone(String phone) { 
-        this.phone = phone; 
+    public String getEmail() {
+        return email;
     }
 
-    public String getEmail() { 
-        return email; 
-    }
-    public void setEmail(String email) { 
-        this.email = email; 
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getAddress() { 
-        return address; 
-    }
-    public void setAddress(String address) { 
-        this.address = address; 
+    public Eps getEps() {
+        return eps;
     }
 
-    public String getPassword() { 
-        return password; 
-    }
-    public void setPassword(String password) { 
-        this.password = password; 
+    public void setEps(Eps eps) {
+        this.eps = eps;
     }
 
-    public Role getRole() {
-        return role; 
+    public List<UserPhone> getUserPhones() {
+        return userPhones;
     }
-    public void setRole(Role role) { 
-        this.role = role; 
+
+    public void setUserPhones(List<UserPhone> userPhones) {
+        this.userPhones = userPhones;
+    }
+
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
     }
 }

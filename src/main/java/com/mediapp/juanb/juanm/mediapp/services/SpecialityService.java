@@ -13,7 +13,7 @@ import com.mediapp.juanb.juanm.mediapp.repositories.SpecialityRepository;
 public class SpecialityService {
 
     private SpecialityRepository specialityRepository;
-    
+
     public SpecialityService(SpecialityRepository specialityRepository) {
         this.specialityRepository = specialityRepository;
     }
@@ -35,7 +35,7 @@ public class SpecialityService {
     }
 
     public Speciality update(UUID uuid, Speciality speciality) {
-        speciality.setId(uuid);
+        speciality.setIdSpeciality(uuid);
         return specialityRepository.save(speciality);
     }
 }

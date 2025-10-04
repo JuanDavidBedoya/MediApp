@@ -36,7 +36,7 @@ public class MedicationController {
         return ResponseEntity.ok(list);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{uuid}")
     public Optional <Medication> getById(@PathVariable("id") UUID id) {
         return medicationService.findById(id);
     }
@@ -47,13 +47,13 @@ public class MedicationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newMedication);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{uuid}")
     public ResponseEntity <Medication> update(@PathVariable ("id") UUID id, @RequestBody Medication medication) {
         Medication newMedication = medicationService.update(id, medication);
         return ResponseEntity.ok(newMedication);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{uuid}")
     public ResponseEntity <Void> delete(@PathVariable("id") UUID id) {
        medicationService.delete(id);
        return ResponseEntity.noContent().build();

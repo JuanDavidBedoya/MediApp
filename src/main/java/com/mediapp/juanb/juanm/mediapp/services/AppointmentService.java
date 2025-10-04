@@ -2,6 +2,7 @@ package com.mediapp.juanb.juanm.mediapp.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class AppointmentService {
         return appointmentRepository.findAll();
     }
 
-    public Optional<Appointment> findById(java.util.UUID uuid) {
+    public Optional<Appointment> findById(UUID uuid) {
         return appointmentRepository.findById(uuid);
     }
 
@@ -29,12 +30,12 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    public void delete(java.util.UUID uuid) {
+    public void delete(UUID uuid) {
         appointmentRepository.deleteById(uuid);
     }
 
-    public Appointment update(java.util.UUID uuid, Appointment appointment) {
-        appointment.setUuidAppointment(uuid);
+    public Appointment update(UUID uuid, Appointment appointment) {
+        appointment.setIdAppointment(uuid);
         return appointmentRepository.save(appointment);
     }
 }

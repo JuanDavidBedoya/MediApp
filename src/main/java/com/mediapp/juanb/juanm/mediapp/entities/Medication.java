@@ -1,50 +1,41 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
-import java.util.UUID;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "medicamentos")
+@Table(name = "medications")
 public class Medication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "uuid_medication")
-    private UUID uuidMedication;
+    @Column(name = "id_medication", updatable = false, nullable = false, unique = true)
+    private UUID idMedication;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "price", nullable = false)
+    private float price;
 
-    @Column(name = "dosage")
-    private String dosage;
+    @OneToMany(mappedBy = "medication")
+    private List<FormulaDetail> formulaDetails = new ArrayList<>();
 
-    @Column(name = "presentation")
-    private String presentation;
+    public Medication() {}
 
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
-
-    public Medication() {
-    }
-
-    public Medication(UUID uuidMedication, String name, String description, String dosage, String presentation, Integer quantity) {
-        this.uuidMedication = uuidMedication;
+    public Medication(String name, float price) {
         this.name = name;
-        this.description = description;
-        this.dosage = dosage;
-        this.presentation = presentation;
-        this.quantity = quantity;
+        this.price = price;
     }
 
-    public UUID getUuidMedication() {
-        return uuidMedication;
+    public UUID getIdMedication() {
+        return idMedication;
     }
 
-    public void setUuidMedication(UUID uuidMedication) {
-        this.uuidMedication = uuidMedication;
+    public void setIdMedication(UUID idMedication) {
+        this.idMedication = idMedication;
     }
 
     public String getName() {
@@ -55,35 +46,19 @@ public class Medication {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public float getPrice() {
+        return price;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPrice(float price) {
+        this.price = price;
     }
 
-    public String getDosage() {
-        return dosage;
+    public List<FormulaDetail> getFormulaDetails() {
+        return formulaDetails;
     }
 
-    public void setDosage(String dosage) {
-        this.dosage = dosage;
-    }
-
-    public String getPresentation() {
-        return presentation;
-    }
-
-    public void setPresentation(String presentation) {
-        this.presentation = presentation;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setFormulaDetails(List<FormulaDetail> formulaDetails) {
+        this.formulaDetails = formulaDetails;
     }
 }

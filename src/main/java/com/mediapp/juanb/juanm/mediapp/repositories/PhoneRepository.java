@@ -1,11 +1,13 @@
 package com.mediapp.juanb.juanm.mediapp.repositories;
 
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.mediapp.juanb.juanm.mediapp.entities.Role;
+import com.mediapp.juanb.juanm.mediapp.entities.Phone;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
+public interface PhoneRepository extends JpaRepository <Phone, UUID>{
 
 }
