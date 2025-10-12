@@ -3,11 +3,13 @@ package com.mediapp.juanb.juanm.mediapp.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mediapp.juanb.juanm.mediapp.entities.FormulaDetail;
+import com.mediapp.juanb.juanm.mediapp.dtos.FormulaDetailRequestDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.FormulaDetailResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.services.FormulaDetailService;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -20,41 +22,48 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/formula_details")
+@RequestMapping("/formula-details")
 public class FormulaDetailController {
 
-    private FormulaDetailService formulaDetailService;
+    private final FormulaDetailService formulaDetailService;
 
     public FormulaDetailController(FormulaDetailService formulaDetailService) {
         this.formulaDetailService = formulaDetailService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<FormulaDetail>> getAll(){
-        List<FormulaDetail> list = formulaDetailService.findAll();
-        return ResponseEntity.ok(list);
-    }
-
-    @GetMapping("/{uuid}")
-    public Optional<FormulaDetail> getById(@PathVariable("uuid") UUID uuid){
-        return formulaDetailService.findById(uuid);
-    }
-    
+    // POST: Agregar un medicamento a una fórmula (crear un detalle)
     @PostMapping
-    public ResponseEntity<FormulaDetail> save(@RequestBody FormulaDetail formulaDetail) {
-        FormulaDetail newFormulaDetail = formulaDetailService.save(formulaDetail);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newFormulaDetail);
+    public ResponseEntity<FormulaDetailResponseDTO> addFormulaDetail(@Valid @RequestBody FormulaDetailRequestDTO requestDTO) {
+        FormulaDetailResponseDTO response = formulaDetailService.save(requestDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{uuid}")
-    public ResponseEntity<FormulaDetail> update(@PathVariable("uuid") UUID uuid, @RequestBody FormulaDetail formulaDetail) {
-        FormulaDetail updatedFormulaDetail = formulaDetailService.update(uuid, formulaDetail);
-        return ResponseEntity.ok(updatedFormulaDetail);
+    // GET: Obtener todos los detalles de fórmulas
+    @GetMapping
+    public ResponseEntity<List<FormulaDetailResponseDTO>> getAllFormulaDetails() {
+        List<FormulaDetailResponseDTO> response = formulaDetailService.findAll();
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> delete(@PathVariable("uuid") UUID uuid) {
-        formulaDetailService.delete(uuid);
+    // GET: Obtener un detalle por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<FormulaDetailResponseDTO> getFormulaDetailById(@PathVariable UUID id) {
+        FormulaDetailResponseDTO response = formulaDetailService.findById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    // PUT: Actualizar la dosis o cantidad de un medicamento en una fórmula
+    @PutMapping("/{id}")
+    public ResponseEntity<FormulaDetailResponseDTO> updateFormulaDetail(@PathVariable UUID id, 
+                                                                      @Valid @RequestBody FormulaDetailRequestDTO requestDTO) {
+        FormulaDetailResponseDTO response = formulaDetailService.update(id, requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    // DELETE: Eliminar un medicamento de una fórmula (eliminar el detalle)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFormulaDetail(@PathVariable UUID id) {
+        formulaDetailService.delete(id);
         return ResponseEntity.noContent().build();
-    }   
+    }
 }

@@ -30,15 +30,23 @@ public class Appointment {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+    @Column(name = "time", nullable = false)
+    @Temporal(TemporalType.TIME)
+    private Date time;
+
     @Column(name = "observations", length = 1000)
     private String observations;
 
     public Appointment() {}
 
-    public Appointment(Doctor doctor, User patient, Date date, String observations) {
+    public Appointment(UUID idAppointment, Doctor doctor, User patient, List<Formula> formulas, Date date, Date time,
+            String observations) {
+        this.idAppointment = idAppointment;
         this.doctor = doctor;
         this.patient = patient;
+        this.formulas = formulas;
         this.date = date;
+        this.time = time;
         this.observations = observations;
     }
 
@@ -80,6 +88,14 @@ public class Appointment {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 
     public String getObservations() {

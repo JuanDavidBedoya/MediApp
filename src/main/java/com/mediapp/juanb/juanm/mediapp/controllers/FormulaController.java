@@ -3,11 +3,13 @@ package com.mediapp.juanb.juanm.mediapp.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mediapp.juanb.juanm.mediapp.entities.Formula;
+import com.mediapp.juanb.juanm.mediapp.dtos.FormulaRequestDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.FormulaResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.services.FormulaService;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -23,38 +25,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/formulas")
 public class FormulaController {
 
-    private FormulaService formulaService;
+    private final FormulaService formulaService;
 
     public FormulaController(FormulaService formulaService) {
         this.formulaService = formulaService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Formula>> getAll(){
-        List<Formula> list = formulaService.findAll();
-        return ResponseEntity.ok(list);
-    }
-
-    @GetMapping("/{uuid}")
-    public Optional<Formula> getById(@PathVariable("uuid") UUID uuid){
-        return formulaService.findById(uuid);
-    }
-    
+    // POST: Generar una nueva fórmula para una cita
     @PostMapping
-    public ResponseEntity<Formula> save(@RequestBody Formula formula) {
-        Formula newFormula = formulaService.save(formula);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newFormula);
+    public ResponseEntity<FormulaResponseDTO> createFormula(@Valid @RequestBody FormulaRequestDTO requestDTO) {
+        FormulaResponseDTO response = formulaService.save(requestDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{uuid}")
-    public ResponseEntity<Formula> update(@PathVariable("uuid") UUID uuid, @RequestBody Formula formula) {
-        Formula updatedFormula = formulaService.update(uuid, formula);
-        return ResponseEntity.ok(updatedFormula);
+    // GET: Obtener todas las fórmulas
+    @GetMapping
+    public ResponseEntity<List<FormulaResponseDTO>> getAllFormulas() {
+        List<FormulaResponseDTO> response = formulaService.findAll();
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> delete(@PathVariable("uuid") UUID uuid) {
-        formulaService.delete(uuid);
+    // GET: Obtener una fórmula por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<FormulaResponseDTO> getFormulaById(@PathVariable UUID id) {
+        FormulaResponseDTO response = formulaService.findById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    // PUT: Actualizar una fórmula (ej. actualizar fecha de emisión)
+    @PutMapping("/{id}")
+    public ResponseEntity<FormulaResponseDTO> updateFormula(@PathVariable UUID id, 
+                                                          @Valid @RequestBody FormulaRequestDTO requestDTO) {
+        FormulaResponseDTO response = formulaService.update(id, requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    // DELETE: Eliminar una fórmula por ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFormula(@PathVariable UUID id) {
+        formulaService.delete(id);
         return ResponseEntity.noContent().build();
-    }   
+    }
 }
