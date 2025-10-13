@@ -1,53 +1,45 @@
 package com.mediapp.juanb.juanm.mediapp.controllers;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.mediapp.juanb.juanm.mediapp.dtos.SpecialityRequestDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.SpecialityResponseDTO;
+import com.mediapp.juanb.juanm.mediapp.services.SpecialityService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.mediapp.juanb.juanm.mediapp.entities.Speciality;
-import com.mediapp.juanb.juanm.mediapp.services.SpecialityService;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/especialidades")
 public class SpecialityController {
 
-    private SpecialityService specialityService;
+    private final SpecialityService specialityService;
 
     public SpecialityController(SpecialityService specialityService) {
         this.specialityService = specialityService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Speciality>> getAll(){
-        List<Speciality> list = specialityService.findAll();
-        return ResponseEntity.ok(list);
+    public ResponseEntity<List<SpecialityResponseDTO>> getAll() {
+        return ResponseEntity.ok(specialityService.findAll());
     }
 
     @GetMapping("/{uuid}")
-    public Optional<Speciality> getById(@PathVariable("cedula") UUID uuid){
-        return specialityService.findById(uuid);
+    public ResponseEntity<SpecialityResponseDTO> getById(@PathVariable("uuid") UUID uuid) {
+        return ResponseEntity.ok(specialityService.findById(uuid));
     }
-    
+
     @PostMapping
-    public ResponseEntity<Speciality> save(@RequestBody Speciality speciality) {
-        Speciality newSpeciality = specialityService.save(speciality);
+    public ResponseEntity<SpecialityResponseDTO> save(@Valid @RequestBody SpecialityRequestDTO specialityDTO) {
+        SpecialityResponseDTO newSpeciality = specialityService.save(specialityDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newSpeciality);
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<Speciality> update(@PathVariable("uuid") UUID uuid, @RequestBody Speciality speciality) {
-        Speciality updatedSpeciality = specialityService.update(uuid, speciality);
+    public ResponseEntity<SpecialityResponseDTO> update(@PathVariable("uuid") UUID uuid, @Valid @RequestBody SpecialityRequestDTO specialityDTO) {
+        SpecialityResponseDTO updatedSpeciality = specialityService.update(uuid, specialityDTO);
         return ResponseEntity.ok(updatedSpeciality);
     }
 
@@ -55,5 +47,5 @@ public class SpecialityController {
     public ResponseEntity<Void> delete(@PathVariable("uuid") UUID uuid) {
         specialityService.delete(uuid);
         return ResponseEntity.noContent().build();
-    }   
+    }
 }

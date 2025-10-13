@@ -1,41 +1,75 @@
 package com.mediapp.juanb.juanm.mediapp.services;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.mediapp.juanb.juanm.mediapp.dtos.EpsRequestDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.EpsResponseDTO;
+import com.mediapp.juanb.juanm.mediapp.entities.Eps;
+import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceAlreadyExistsException;
+import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceNotFoundException;
+import com.mediapp.juanb.juanm.mediapp.mappers.EpsMapper;
+import com.mediapp.juanb.juanm.mediapp.repositories.EpsRepository;
 import org.springframework.stereotype.Service;
 
-import com.mediapp.juanb.juanm.mediapp.entities.Eps;
-import com.mediapp.juanb.juanm.mediapp.repositories.EpsRepository;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class EpsService {
 
-    private EpsRepository epsRepository;
+    private final EpsRepository epsRepository;
+    private final EpsMapper epsMapper;
 
-    public EpsService(EpsRepository epsRepository) {
+    public EpsService(EpsRepository epsRepository, EpsMapper epsMapper) {
         this.epsRepository = epsRepository;
+        this.epsMapper = epsMapper;
     }
 
-    public List<Eps> findAll() {
-        return epsRepository.findAll();
+    public List<EpsResponseDTO> findAll() {
+        return epsRepository.findAll()
+                .stream()
+                .map(epsMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Eps> findById(UUID uuid) {
-        return epsRepository.findById(uuid);
+    public EpsResponseDTO findById(UUID uuid) {
+        Eps eps = epsRepository.findById(uuid)
+
+                .orElseThrow(() -> new ResourceNotFoundException("EPS no encontrada con ID: " + uuid));
+        return epsMapper.toResponseDTO(eps);
     }
 
-    public Eps save(Eps eps) {
-        return epsRepository.save(eps);
+    public EpsResponseDTO save(EpsRequestDTO epsDTO) {
+        if (epsRepository.findByName(epsDTO.name()).isPresent()) {
+
+            throw new ResourceAlreadyExistsException("Ya existe una EPS con el nombre: " + epsDTO.name());
+        }
+        Eps newEps = epsMapper.toEntity(epsDTO);
+        Eps savedEps = epsRepository.save(newEps);
+        return epsMapper.toResponseDTO(savedEps);
     }
 
     public void delete(UUID uuid) {
+        if (!epsRepository.existsById(uuid)) {
+
+            throw new ResourceNotFoundException("EPS no encontrada con ID: " + uuid);
+        }
         epsRepository.deleteById(uuid);
     }
 
-    public Eps update(UUID uuid, Eps eps) {
-        eps.setIdEps(uuid);
-        return epsRepository.save(eps);
+    public EpsResponseDTO update(UUID uuid, EpsRequestDTO epsDTO) {
+        Eps existingEps = epsRepository.findById(uuid)
+
+                .orElseThrow(() -> new ResourceNotFoundException("EPS no encontrada con ID: " + uuid));
+        
+        epsRepository.findByName(epsDTO.name()).ifPresent(eps -> {
+            if (!eps.getIdEps().equals(uuid)) {
+
+                throw new ResourceAlreadyExistsException("El nombre '" + epsDTO.name() + "' ya está en uso por otra EPS.");
+            }
+        });
+
+        existingEps.setName(epsDTO.name());
+        Eps updatedEps = epsRepository.save(existingEps);
+        return epsMapper.toResponseDTO(updatedEps);
     }
 }

@@ -1,5 +1,6 @@
 package com.mediapp.juanb.juanm.mediapp.repositories;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,5 +10,7 @@ import com.mediapp.juanb.juanm.mediapp.entities.Phone;
 
 @Repository
 public interface PhoneRepository extends JpaRepository <Phone, UUID>{
+
+    Optional<Phone> findByPhone(String phone);
 
 }
