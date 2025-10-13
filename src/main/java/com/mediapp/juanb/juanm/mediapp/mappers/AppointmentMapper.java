@@ -29,7 +29,11 @@ public class AppointmentMapper {
 
     public Appointment toEntity(AppointmentRequestDTO dto, UUID id) {
         if (dto == null) return null;
-        Appointment entity = id != null ? new Appointment() : appointmentRepository.findById(id).orElse(new Appointment());
+
+        Appointment entity = id == null
+                ? new Appointment()
+                : appointmentRepository.findById(id).orElse(new Appointment());
+
         if (id != null) entity.setIdAppointment(id);
 
         Doctor doctor = doctorRepository.findById(dto.doctorCedula())
@@ -43,6 +47,7 @@ public class AppointmentMapper {
         entity.setDate(dto.date());
         entity.setTime(dto.time());
         entity.setObservations(dto.observations());
+
         return entity;
     }
 
