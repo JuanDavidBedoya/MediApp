@@ -9,10 +9,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.sql.Time;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,15 +50,15 @@ class AppointmentServiceTest {
     private Appointment mockAppointment;
     private UUID appointmentId;
     private Date futureDate;
-    private Date time;
+    private Time time;
 
     @BeforeEach
     void setUp() {
         appointmentId = UUID.randomUUID();
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 1);
-        futureDate = cal.getTime();
-        time = new Date();
+        futureDate = new Date(cal.getTimeInMillis());
+        time = new Time(0);
 
         validRequest = new AppointmentRequestDTO("123456", "654321", futureDate, time, "Chequeo general");
 
@@ -74,7 +75,7 @@ class AppointmentServiceTest {
     @Test
     void save_Success_NoConflict() {
 
-        when(appointmentRepository.findConflictingAppointment(anyString(), anyString(), any(Date.class), any(Date.class)))
+        when(appointmentRepository.findConflictingAppointment(anyString(), anyString(), any(Date.class), any(Time.class)))
             .thenReturn(Optional.empty());
         when(appointmentMapper.toEntity(validRequest, null)).thenReturn(mockAppointment);
         when(appointmentRepository.save(any(Appointment.class))).thenReturn(mockAppointment);
@@ -91,7 +92,7 @@ class AppointmentServiceTest {
 
         Appointment conflictApp = mockAppointment;
 
-        when(appointmentRepository.findConflictingAppointment(anyString(), anyString(), any(Date.class), any(Date.class)))
+        when(appointmentRepository.findConflictingAppointment(anyString(), anyString(), any(Date.class), any(Time.class)))
             .thenReturn(Optional.of(conflictApp));
 
         assertThrows(IllegalArgumentException.class, () -> {

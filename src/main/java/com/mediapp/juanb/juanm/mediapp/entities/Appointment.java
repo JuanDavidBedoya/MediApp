@@ -1,10 +1,12 @@
 package com.mediapp.juanb.juanm.mediapp.entities;
 
 import jakarta.persistence.*;
+
+import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.Date;
 
 @Entity
 @Table(name = "appointments")
@@ -32,14 +34,14 @@ public class Appointment {
 
     @Column(name = "time", nullable = false)
     @Temporal(TemporalType.TIME)
-    private Date time;
+    private Time time;
 
     @Column(name = "observations", length = 1000)
     private String observations;
 
     public Appointment() {}
 
-    public Appointment(UUID idAppointment, Doctor doctor, User patient, List<Formula> formulas, Date date, Date time,
+    public Appointment(UUID idAppointment, Doctor doctor, User patient, List<Formula> formulas, Date date, Time time,
             String observations) {
         this.idAppointment = idAppointment;
         this.doctor = doctor;
@@ -90,11 +92,11 @@ public class Appointment {
         this.date = date;
     }
 
-    public Date getTime() {
+    public Time getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(Time time) {
         this.time = time;
     }
 

@@ -30,7 +30,7 @@ public class AppointmentMapper {
     public Appointment toEntity(AppointmentRequestDTO dto, UUID id) {
         if (dto == null) return null;
         Appointment entity = id != null ? new Appointment() : appointmentRepository.findById(id).orElse(new Appointment());
-        if (id != null) entity.setIdAppointment(id); // Para actualización
+        if (id != null) entity.setIdAppointment(id);
 
         Doctor doctor = doctorRepository.findById(dto.doctorCedula())
             .orElseThrow(() -> new ResourceNotFoundException("Doctor no encontrado: " + dto.doctorCedula()));

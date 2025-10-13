@@ -52,7 +52,7 @@ class FormulaServiceTest {
         formulaId = UUID.randomUUID();
         appointmentId = UUID.randomUUID();
 
-        validRequest = new FormulaRequestDTO(appointmentId);
+        validRequest = new FormulaRequestDTO(appointmentId, null);
 
         Appointment mockAppointment = new Appointment();
         mockAppointment.setIdAppointment(appointmentId);
@@ -92,7 +92,7 @@ class FormulaServiceTest {
     void update_Fails_ChangingAppointmentId() {
 
         UUID newAppointmentId = UUID.randomUUID();
-        FormulaRequestDTO invalidUpdateRequest = new FormulaRequestDTO(newAppointmentId);
+        FormulaRequestDTO invalidUpdateRequest = new FormulaRequestDTO(newAppointmentId, null);
         when(formulaRepository.findById(formulaId)).thenReturn(Optional.of(mockFormula));
 
         assertThrows(IllegalArgumentException.class, () -> {

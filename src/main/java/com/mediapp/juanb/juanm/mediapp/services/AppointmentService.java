@@ -1,6 +1,7 @@
 package com.mediapp.juanb.juanm.mediapp.services;
 
-import java.util.Date;
+import java.sql.Time;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class AppointmentService {
         this.appointmentMapper = appointmentMapper;
     }
 
-    private void validateTimeConflict(String doctorCedula, String patientCedula, Date date, Date time, UUID currentAppointmentId) {
+    private void validateTimeConflict(String doctorCedula, String patientCedula, Date date, Time time, UUID currentAppointmentId) {
 
         Optional<Appointment> conflict = appointmentRepository.findConflictingAppointment(doctorCedula, patientCedula, date, time);
         

@@ -1,6 +1,7 @@
 package com.mediapp.juanb.juanm.mediapp.dtos;
 
-import java.util.Date;
+import java.sql.Time;
+import java.sql.Date;
 import java.util.UUID;
 
 public record AppointmentResponseDTO(
@@ -8,6 +9,6 @@ public record AppointmentResponseDTO(
     String doctorCedula,
     String patientCedula,
     Date date,
-    Date time,
+    Time time,
     String observations
 ) {}

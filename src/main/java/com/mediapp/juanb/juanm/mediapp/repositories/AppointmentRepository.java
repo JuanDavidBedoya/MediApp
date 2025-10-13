@@ -1,6 +1,7 @@
 package com.mediapp.juanb.juanm.mediapp.repositories;
 
-import java.util.Date;
+import java.sql.Time;
+import java.sql.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,5 +22,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
         @Param("doctorCedula") String doctorCedula,
         @Param("patientCedula") String patientCedula,
         @Param("date") Date date,
-        @Param("time") Date time);
+        @Param("time") Time time);
 }
