@@ -26,7 +26,7 @@ public class FormulaService {
     }
 
     public FormulaResponseDTO save(FormulaRequestDTO requestDTO) {
-        formulaRepository.findByAppointmentId(requestDTO.appointmentId())
+        formulaRepository.findByAppointmentIdAppointment(requestDTO.appointmentId())
             .ifPresent(formula -> {
                 throw new IllegalArgumentException("Esta cita ya tiene una fórmula asociada (ID: " + formula.getIdFormula() + ")");
             });

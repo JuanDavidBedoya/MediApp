@@ -1,5 +1,7 @@
 package com.mediapp.juanb.juanm.mediapp.mappers;
 
+import org.springframework.stereotype.Component;
+
 import com.mediapp.juanb.juanm.mediapp.dtos.FormulaDetailRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.FormulaDetailResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.entities.Formula;
@@ -9,6 +11,7 @@ import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceNotFoundException;
 import com.mediapp.juanb.juanm.mediapp.repositories.FormulaRepository;
 import com.mediapp.juanb.juanm.mediapp.repositories.MedicationRepository;
 
+@Component
 public class FormulaDetailMapper {
 
     private final FormulaRepository formulaRepository;

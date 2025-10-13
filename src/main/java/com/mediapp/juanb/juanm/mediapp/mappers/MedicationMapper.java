@@ -1,9 +1,12 @@
 package com.mediapp.juanb.juanm.mediapp.mappers;
 
+import org.springframework.stereotype.Component;
+
 import com.mediapp.juanb.juanm.mediapp.dtos.MedicationRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.MedicationResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.entities.Medication;
 
+@Component
 public class MedicationMapper {
     
     public static Medication toEntity(MedicationRequestDTO dto) {

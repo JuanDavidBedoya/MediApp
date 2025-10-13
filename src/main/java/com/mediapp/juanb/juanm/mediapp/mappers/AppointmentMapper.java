@@ -2,6 +2,8 @@ package com.mediapp.juanb.juanm.mediapp.mappers;
 
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
 import com.mediapp.juanb.juanm.mediapp.dtos.AppointmentRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.AppointmentResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.entities.Appointment;
@@ -12,6 +14,7 @@ import com.mediapp.juanb.juanm.mediapp.repositories.AppointmentRepository;
 import com.mediapp.juanb.juanm.mediapp.repositories.DoctorRepository;
 import com.mediapp.juanb.juanm.mediapp.repositories.UserRepository;
 
+@Component
 public class AppointmentMapper {
 
     private final DoctorRepository doctorRepository;

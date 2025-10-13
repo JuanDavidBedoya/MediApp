@@ -58,7 +58,7 @@ class FormulaDetailServiceTest {
     @Test
     void save_Success() {
 
-        when(formulaDetailRepository.findByFormulaIdAndMedicationId(formulaId, medicationId)).thenReturn(Optional.empty());
+        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(formulaId, medicationId)).thenReturn(Optional.empty());
         when(formulaDetailMapper.toEntity(validRequest)).thenReturn(mockDetail);
         when(formulaDetailRepository.save(any(FormulaDetail.class))).thenReturn(mockDetail);
         when(formulaDetailMapper.toResponseDTO(any(FormulaDetail.class))).thenReturn(new FormulaDetailResponseDTO(mockDetail.getIdFormulaDetail(), formulaId, medicationId, 2, "Cada 8 horas"));
@@ -72,7 +72,7 @@ class FormulaDetailServiceTest {
     @Test
     void save_Fails_MedicationAlreadyInFormula() {
 
-        when(formulaDetailRepository.findByFormulaIdAndMedicationId(formulaId, medicationId)).thenReturn(Optional.of(mockDetail));
+        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(formulaId, medicationId)).thenReturn(Optional.of(mockDetail));
 
         assertThrows(IllegalArgumentException.class, () -> {
             formulaDetailService.save(validRequest);

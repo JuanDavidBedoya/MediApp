@@ -9,5 +9,5 @@ import com.mediapp.juanb.juanm.mediapp.entities.Formula;
 
 @Repository
 public interface FormulaRepository extends JpaRepository <Formula, UUID>{
-    Optional<Formula> findByAppointmentId(UUID appointmentId);
+    Optional<Formula> findByAppointmentIdAppointment(UUID idAppointment);
 }

@@ -2,6 +2,8 @@ package com.mediapp.juanb.juanm.mediapp.mappers;
 
 import java.util.Date;
 
+import org.springframework.stereotype.Component;
+
 import com.mediapp.juanb.juanm.mediapp.dtos.FormulaRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.FormulaResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.entities.Appointment;
@@ -9,6 +11,7 @@ import com.mediapp.juanb.juanm.mediapp.entities.Formula;
 import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceNotFoundException;
 import com.mediapp.juanb.juanm.mediapp.repositories.AppointmentRepository;
 
+@Component
 public class FormulaMapper {
     
     private final AppointmentRepository appointmentRepository;

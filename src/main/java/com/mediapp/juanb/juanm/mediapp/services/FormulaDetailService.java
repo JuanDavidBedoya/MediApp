@@ -26,7 +26,7 @@ public class FormulaDetailService {
 
     public FormulaDetailResponseDTO save(FormulaDetailRequestDTO requestDTO) {
 
-        formulaDetailRepository.findByFormulaIdAndMedicationId(requestDTO.formulaId(), requestDTO.medicationId())
+        formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(requestDTO.formulaId(), requestDTO.medicationId())
             .ifPresent(detail -> {
                 throw new IllegalArgumentException("El medicamento ya está listado en esta fórmula.");
             });

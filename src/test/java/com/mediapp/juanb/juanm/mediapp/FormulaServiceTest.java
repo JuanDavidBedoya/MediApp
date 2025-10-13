@@ -66,7 +66,7 @@ class FormulaServiceTest {
     @Test
     void save_Success() {
 
-        when(formulaRepository.findByAppointmentId(appointmentId)).thenReturn(Optional.empty());
+        when(formulaRepository.findByAppointmentIdAppointment(appointmentId)).thenReturn(Optional.empty());
         when(formulaMapper.toEntity(validRequest)).thenReturn(mockFormula);
         when(formulaRepository.save(any(Formula.class))).thenReturn(mockFormula);
         when(formulaMapper.toResponseDTO(any(Formula.class))).thenReturn(new FormulaResponseDTO(formulaId, appointmentId, new Date()));
@@ -80,7 +80,7 @@ class FormulaServiceTest {
     @Test
     void save_Fails_AppointmentAlreadyHasFormula() {
 
-        when(formulaRepository.findByAppointmentId(appointmentId)).thenReturn(Optional.of(mockFormula));
+        when(formulaRepository.findByAppointmentIdAppointment(appointmentId)).thenReturn(Optional.of(mockFormula));
 
         assertThrows(IllegalArgumentException.class, () -> {
             formulaService.save(validRequest);
