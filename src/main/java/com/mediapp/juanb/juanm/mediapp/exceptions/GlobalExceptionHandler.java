@@ -59,17 +59,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(CapacityExceededException.class) //400
-    public ResponseEntity<Object> handleCapacityExceeded(CapacityExceededException ex, WebRequest request) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", ex.getMessage());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", "Bad Request");
-        
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(BusinessException.class) //400
     public ResponseEntity<Object> handleBusinessException(BusinessException ex, WebRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();

@@ -22,7 +22,7 @@ public class Doctor {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @OneToMany(mappedBy = "doctor")

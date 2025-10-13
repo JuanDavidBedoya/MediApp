@@ -3,11 +3,13 @@ package com.mediapp.juanb.juanm.mediapp.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mediapp.juanb.juanm.mediapp.entities.Eps;
+import com.mediapp.juanb.juanm.mediapp.dtos.EpsRequestDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.EpsResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.services.EpsService;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -23,32 +25,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/eps")
 public class EpsController {
 
-    private EpsService epsService;
+    private final EpsService epsService;
 
     public EpsController(EpsService epsService) {
         this.epsService = epsService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Eps>> getAll(){
-        List<Eps> list = epsService.findAll();
-        return ResponseEntity.ok(list);
+    public ResponseEntity<List<EpsResponseDTO>> getAll() {
+        return ResponseEntity.ok(epsService.findAll());
     }
 
     @GetMapping("/{uuid}")
-    public Optional<Eps> getById(@PathVariable("uuid") UUID uuid){
-        return epsService.findById(uuid);
+    public ResponseEntity<EpsResponseDTO> getById(@PathVariable("uuid") UUID uuid) {
+        return ResponseEntity.ok(epsService.findById(uuid));
     }
-    
+
     @PostMapping
-    public ResponseEntity<Eps> save(@RequestBody Eps eps) {
-        Eps newEps = epsService.save(eps);
+    public ResponseEntity<EpsResponseDTO> save(@Valid @RequestBody EpsRequestDTO epsDTO) {
+        EpsResponseDTO newEps = epsService.save(epsDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newEps);
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<Eps> update(@PathVariable("uuid") UUID uuid, @RequestBody Eps eps) {
-        Eps updatedEps = epsService.update(uuid, eps);
+    public ResponseEntity<EpsResponseDTO> update(@PathVariable("uuid") UUID uuid, @Valid @RequestBody EpsRequestDTO epsDTO) {
+        EpsResponseDTO updatedEps = epsService.update(uuid, epsDTO);
         return ResponseEntity.ok(updatedEps);
     }
 
@@ -56,5 +57,5 @@ public class EpsController {
     public ResponseEntity<Void> delete(@PathVariable("uuid") UUID uuid) {
         epsService.delete(uuid);
         return ResponseEntity.noContent().build();
-    }   
+    }
 }
