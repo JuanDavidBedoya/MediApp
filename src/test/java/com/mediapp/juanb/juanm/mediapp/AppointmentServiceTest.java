@@ -10,9 +10,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.sql.Time;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 import java.sql.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,47 +42,75 @@ class AppointmentServiceTest {
     private AppointmentRepository appointmentRepository;
 
     @Mock
-    private AppointmentMapper appointmentMapper; // Mappeo de DTO a Entidad
+    private AppointmentMapper appointmentMapper;
 
     @InjectMocks
     private AppointmentService appointmentService;
 
-    private AppointmentRequestDTO validRequest;
-    private Appointment mockAppointment;
-    private UUID appointmentId;
+    private List<AppointmentRequestDTO> appointmentRequests;
+    private List<Appointment> mockAppointments;
+    private List<UUID> appointmentIds;
     private Date futureDate;
     private Time time;
 
     @BeforeEach
     void setUp() {
-        appointmentId = UUID.randomUUID();
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 1);
         futureDate = new Date(cal.getTimeInMillis());
-        time = new Time(0);
+        time = new Time(9, 0, 0);
 
-        validRequest = new AppointmentRequestDTO("123456", "654321", futureDate, time, "Chequeo general");
+        // --- Dataset con 5 citas ---
+        appointmentRequests = new ArrayList<>();
+        mockAppointments = new ArrayList<>();
+        appointmentIds = new ArrayList<>();
 
-        Doctor mockDoctor = new Doctor(); mockDoctor.setCedulaDoctor("123456");
-        User mockPatient = new User(); mockPatient.setCedula("654321");
+        for (int i = 1; i <= 5; i++) {
+            UUID id = UUID.randomUUID();
+            appointmentIds.add(id);
 
-        mockAppointment = new Appointment();
-        mockAppointment.setIdAppointment(appointmentId);
-        mockAppointment.setDoctor(mockDoctor);
-        mockAppointment.setPatient(mockPatient);
-        mockAppointment.setFormulas(Collections.emptyList());
+            Doctor doctor = new Doctor();
+            doctor.setCedulaDoctor("DOC-" + i);
+
+            User patient = new User();
+            patient.setCedula("PAT-" + i);
+
+            AppointmentRequestDTO req = new AppointmentRequestDTO(
+                    doctor.getCedulaDoctor(),
+                    patient.getCedula(),
+                    futureDate,
+                    time,
+                    "Observación #" + i
+            );
+
+            Appointment app = new Appointment();
+            app.setIdAppointment(id);
+            app.setDoctor(doctor);
+            app.setPatient(patient);
+            app.setDate(futureDate);
+            app.setTime(time);
+            app.setObservations("Observación #" + i);
+            app.setFormulas(new ArrayList<>());
+
+            appointmentRequests.add(req);
+            mockAppointments.add(app);
+        }
     }
 
     @Test
     void save_Success_NoConflict() {
+        AppointmentRequestDTO request = appointmentRequests.get(0);
+        Appointment appointment = mockAppointments.get(0);
+        UUID id = appointment.getIdAppointment();
 
         when(appointmentRepository.findConflictingAppointment(anyString(), anyString(), any(Date.class), any(Time.class)))
-            .thenReturn(Optional.empty());
-        when(appointmentMapper.toEntity(validRequest, null)).thenReturn(mockAppointment);
-        when(appointmentRepository.save(any(Appointment.class))).thenReturn(mockAppointment);
-        when(appointmentMapper.toResponseDTO(any(Appointment.class))).thenReturn(new AppointmentResponseDTO(appointmentId, "123456", "654321", futureDate, time, "Chequeo general"));
+                .thenReturn(Optional.empty());
+        when(appointmentMapper.toEntity(request, null)).thenReturn(appointment);
+        when(appointmentRepository.save(any(Appointment.class))).thenReturn(appointment);
+        when(appointmentMapper.toResponseDTO(any(Appointment.class)))
+                .thenReturn(new AppointmentResponseDTO(id, "DOC-1", "PAT-1", futureDate, time, "Observación #1"));
 
-        AppointmentResponseDTO result = appointmentService.save(validRequest);
+        AppointmentResponseDTO result = appointmentService.save(request);
 
         assertNotNull(result);
         verify(appointmentRepository, times(1)).save(any(Appointment.class));
@@ -89,29 +118,31 @@ class AppointmentServiceTest {
 
     @Test
     void save_Fails_DoctorConflict() {
-
-        Appointment conflictApp = mockAppointment;
+        Appointment conflictApp = mockAppointments.get(1);
 
         when(appointmentRepository.findConflictingAppointment(anyString(), anyString(), any(Date.class), any(Time.class)))
-            .thenReturn(Optional.of(conflictApp));
+                .thenReturn(Optional.of(conflictApp));
 
         assertThrows(IllegalArgumentException.class, () -> {
-            appointmentService.save(validRequest);
-        }, "Debe lanzar excepción por conflicto de horario.");
-        
+            appointmentService.save(appointmentRequests.get(1));
+        });
+
         verify(appointmentRepository, never()).save(any(Appointment.class));
     }
 
     @Test
     void delete_Fails_HasAssociatedFormulas() {
-
+        Appointment appointment = mockAppointments.get(2);
         Formula mockFormula = new Formula();
-        mockAppointment.setFormulas(Arrays.asList(mockFormula));
-        when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(mockAppointment));
+        appointment.setFormulas(Collections.singletonList(mockFormula));
+
+        when(appointmentRepository.findById(appointment.getIdAppointment()))
+                .thenReturn(Optional.of(appointment));
 
         assertThrows(IllegalArgumentException.class, () -> {
-            appointmentService.delete(appointmentId);
-        }, "Debe lanzar excepción si la cita tiene fórmulas.");
+            appointmentService.delete(appointment.getIdAppointment());
+        });
+
         verify(appointmentRepository, never()).delete(any(Appointment.class));
     }
 }

@@ -9,8 +9,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,7 +27,6 @@ import com.mediapp.juanb.juanm.mediapp.dtos.MedicationRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.MedicationResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.entities.FormulaDetail;
 import com.mediapp.juanb.juanm.mediapp.entities.Medication;
-import com.mediapp.juanb.juanm.mediapp.mappers.MedicationMapper;
 import com.mediapp.juanb.juanm.mediapp.repositories.MedicationRepository;
 import com.mediapp.juanb.juanm.mediapp.services.MedicationService;
 
@@ -38,67 +39,95 @@ class MedicationServiceTest {
     @InjectMocks
     private MedicationService medicationService;
 
-    private Medication existingMedication;
-    private MedicationRequestDTO validRequest;
-    private UUID existingId;
+    private List<Medication> mockMedications;
+    private List<MedicationRequestDTO> requestList;
+    private List<UUID> medicationIds;
 
     @BeforeEach
     void setUp() {
-        existingId = UUID.randomUUID();
+        mockMedications = new ArrayList<>();
+        requestList = new ArrayList<>();
+        medicationIds = new ArrayList<>();
 
-        existingMedication = new Medication();
-        existingMedication.setIdMedication(existingId);
-        existingMedication.setName("Aspirina");
-        existingMedication.setPrice(5.0f);
-        existingMedication.setFormulaDetails(Collections.emptyList());
+        // Crear dataset con 5 medicamentos
+        for (int i = 1; i <= 5; i++) {
+            UUID id = UUID.randomUUID();
+            medicationIds.add(id);
 
-        validRequest = new MedicationRequestDTO("Ibuprofeno", 8.0f);
+            Medication med = new Medication();
+            med.setIdMedication(id);
+            med.setName("Medicamento" + i);
+            med.setPrice(5.0f * i);
+            med.setFormulaDetails(Collections.emptyList());
+
+            MedicationRequestDTO req = new MedicationRequestDTO("Medicamento" + i, 5.0f * i);
+
+            mockMedications.add(med);
+            requestList.add(req);
+        }
     }
 
     @Test
     void save_Success() {
+        MedicationRequestDTO validRequest = requestList.get(0);
+        Medication newMedication = mockMedications.get(0);
 
-        Medication newMedication = MedicationMapper.toEntity(validRequest);
-        when(medicationRepository.findByName(validRequest.name())).thenReturn(Optional.empty());
-        when(medicationRepository.save(any(Medication.class))).thenReturn(existingMedication); 
+        when(medicationRepository.findByName(validRequest.name()))
+                .thenReturn(Optional.empty());
+        when(medicationRepository.save(any(Medication.class)))
+                .thenReturn(newMedication);
 
         MedicationResponseDTO result = medicationService.save(validRequest);
 
         assertNotNull(result);
-        assertEquals(existingMedication.getName(), result.name());
+        assertEquals(validRequest.name(), result.name());
         verify(medicationRepository, times(1)).save(any(Medication.class));
     }
 
     @Test
     void save_Fails_NameAlreadyExists() {
+        Medication existingMedication = mockMedications.get(1);
+        MedicationRequestDTO validRequest = requestList.get(1);
 
-        when(medicationRepository.findByName(validRequest.name())).thenReturn(Optional.of(existingMedication));
+        when(medicationRepository.findByName(validRequest.name()))
+                .thenReturn(Optional.of(existingMedication));
 
         assertThrows(IllegalArgumentException.class, () -> {
             medicationService.save(validRequest);
         }, "Debe lanzar excepción si el nombre ya existe.");
+
         verify(medicationRepository, never()).save(any(Medication.class));
     }
 
     @Test
     void update_Success() {
+        Medication existingMedication = mockMedications.get(2);
+        UUID existingId = existingMedication.getIdMedication();
 
-        MedicationRequestDTO updateRequest = new MedicationRequestDTO("Aspirina Modificada", 10.0f);
-        when(medicationRepository.findById(existingId)).thenReturn(Optional.of(existingMedication));
-        when(medicationRepository.findByName(updateRequest.name())).thenReturn(Optional.empty()); 
-        when(medicationRepository.save(any(Medication.class))).thenReturn(existingMedication); 
+        MedicationRequestDTO updateRequest = new MedicationRequestDTO("NuevoNombre", 12.0f);
+
+        when(medicationRepository.findById(existingId))
+                .thenReturn(Optional.of(existingMedication));
+        when(medicationRepository.findByName(updateRequest.name()))
+                .thenReturn(Optional.empty());
+        when(medicationRepository.save(any(Medication.class)))
+                .thenReturn(existingMedication);
 
         MedicationResponseDTO result = medicationService.update(existingId, updateRequest);
 
         assertNotNull(result);
-        assertEquals("Aspirina Modificada", existingMedication.getName()); 
+        assertEquals("NuevoNombre", existingMedication.getName());
+        verify(medicationRepository, times(1)).save(any(Medication.class));
     }
 
     @Test
     void delete_Success_NoFormulaDetails() {
+        Medication existingMedication = mockMedications.get(3);
+        UUID existingId = existingMedication.getIdMedication();
 
-        when(medicationRepository.findById(existingId)).thenReturn(Optional.of(existingMedication));
-    
+        when(medicationRepository.findById(existingId))
+                .thenReturn(Optional.of(existingMedication));
+
         medicationService.delete(existingId);
 
         verify(medicationRepository, times(1)).delete(existingMedication);
@@ -106,14 +135,19 @@ class MedicationServiceTest {
 
     @Test
     void delete_Fails_InUseByFormulaDetails() {
+        Medication existingMedication = mockMedications.get(4);
+        UUID existingId = existingMedication.getIdMedication();
 
         FormulaDetail mockDetail = new FormulaDetail();
         existingMedication.setFormulaDetails(Arrays.asList(mockDetail));
-        when(medicationRepository.findById(existingId)).thenReturn(Optional.of(existingMedication));
+
+        when(medicationRepository.findById(existingId))
+                .thenReturn(Optional.of(existingMedication));
 
         assertThrows(IllegalArgumentException.class, () -> {
             medicationService.delete(existingId);
         }, "Debe lanzar excepción si el medicamento está en uso.");
+
         verify(medicationRepository, never()).delete(any(Medication.class));
     }
 }

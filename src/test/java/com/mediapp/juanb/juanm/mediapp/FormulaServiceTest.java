@@ -8,9 +8,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,34 +43,56 @@ class FormulaServiceTest {
     @InjectMocks
     private FormulaService formulaService;
 
-    private FormulaRequestDTO validRequest;
-    private Formula mockFormula;
-    private UUID formulaId;
-    private UUID appointmentId;
+    private List<FormulaRequestDTO> requestList;
+    private List<Formula> mockFormulas;
+    private List<UUID> formulaIds;
+    private List<UUID> appointmentIds;
 
     @BeforeEach
     void setUp() {
-        formulaId = UUID.randomUUID();
-        appointmentId = UUID.randomUUID();
+        requestList = new ArrayList<>();
+        mockFormulas = new ArrayList<>();
+        formulaIds = new ArrayList<>();
+        appointmentIds = new ArrayList<>();
 
-        validRequest = new FormulaRequestDTO(appointmentId, null);
+        // Dataset con 5 registros
+        for (int i = 1; i <= 5; i++) {
+            UUID formulaId = UUID.randomUUID();
+            UUID appointmentId = UUID.randomUUID();
+            Date date = new Date(System.currentTimeMillis() - (i * 86400000L)); // fecha distinta por registro
 
-        Appointment mockAppointment = new Appointment();
-        mockAppointment.setIdAppointment(appointmentId);
+            FormulaRequestDTO request = new FormulaRequestDTO(appointmentId, null);
+            requestList.add(request);
 
-        mockFormula = new Formula();
-        mockFormula.setIdFormula(formulaId);
-        mockFormula.setAppointment(mockAppointment);
-        mockFormula.setFormulaDetails(Collections.emptyList());
+            Appointment mockAppointment = new Appointment();
+            mockAppointment.setIdAppointment(appointmentId);
+
+            Formula formula = new Formula();
+            formula.setIdFormula(formulaId);
+            formula.setAppointment(mockAppointment);
+            formula.setDate(date);
+
+            mockFormulas.add(formula);
+            formulaIds.add(formulaId);
+            appointmentIds.add(appointmentId);
+        }
     }
 
     @Test
     void save_Success() {
+        UUID appointmentId = appointmentIds.get(0);
+        Formula mockFormula = mockFormulas.get(0);
+        FormulaRequestDTO validRequest = requestList.get(0);
+        UUID formulaId = mockFormula.getIdFormula();
 
-        when(formulaRepository.findByAppointmentIdAppointment(appointmentId)).thenReturn(Optional.empty());
-        when(formulaMapper.toEntity(validRequest)).thenReturn(mockFormula);
-        when(formulaRepository.save(any(Formula.class))).thenReturn(mockFormula);
-        when(formulaMapper.toResponseDTO(any(Formula.class))).thenReturn(new FormulaResponseDTO(formulaId, appointmentId, new Date()));
+        when(formulaRepository.findByAppointmentIdAppointment(appointmentId))
+                .thenReturn(Optional.empty());
+        when(formulaMapper.toEntity(validRequest))
+                .thenReturn(mockFormula);
+        when(formulaRepository.save(any(Formula.class)))
+                .thenReturn(mockFormula);
+        when(formulaMapper.toResponseDTO(any(Formula.class)))
+                .thenReturn(new FormulaResponseDTO(formulaId, appointmentId, mockFormula.getDate()));
 
         FormulaResponseDTO result = formulaService.save(validRequest);
 
@@ -79,38 +102,50 @@ class FormulaServiceTest {
 
     @Test
     void save_Fails_AppointmentAlreadyHasFormula() {
+        UUID appointmentId = appointmentIds.get(1);
+        Formula mockFormula = mockFormulas.get(1);
+        FormulaRequestDTO validRequest = requestList.get(1);
 
-        when(formulaRepository.findByAppointmentIdAppointment(appointmentId)).thenReturn(Optional.of(mockFormula));
+        when(formulaRepository.findByAppointmentIdAppointment(appointmentId))
+                .thenReturn(Optional.of(mockFormula));
 
         assertThrows(IllegalArgumentException.class, () -> {
             formulaService.save(validRequest);
         }, "Debe lanzar excepción si la cita ya tiene fórmula.");
+
         verify(formulaRepository, never()).save(any(Formula.class));
     }
 
     @Test
     void update_Fails_ChangingAppointmentId() {
+        UUID formulaId = formulaIds.get(2);
+        UUID appointmentId = appointmentIds.get(2);
+        Formula mockFormula = mockFormulas.get(2);
 
-        UUID newAppointmentId = UUID.randomUUID();
-        FormulaRequestDTO invalidUpdateRequest = new FormulaRequestDTO(newAppointmentId, null);
-        when(formulaRepository.findById(formulaId)).thenReturn(Optional.of(mockFormula));
+        FormulaRequestDTO invalidUpdateRequest = new FormulaRequestDTO(UUID.randomUUID(), null);
+        when(formulaRepository.findById(formulaId))
+                .thenReturn(Optional.of(mockFormula));
 
         assertThrows(IllegalArgumentException.class, () -> {
             formulaService.update(formulaId, invalidUpdateRequest);
         }, "No debe permitir cambiar el ID de la cita.");
+
         verify(formulaRepository, never()).save(any(Formula.class));
     }
 
     @Test
     void delete_Fails_HasAssociatedDetails() {
-
+        UUID formulaId = formulaIds.get(3);
+        Formula mockFormula = mockFormulas.get(3);
         FormulaDetail mockDetail = new FormulaDetail();
+
         mockFormula.setFormulaDetails(Arrays.asList(mockDetail));
         when(formulaRepository.findById(formulaId)).thenReturn(Optional.of(mockFormula));
 
         assertThrows(IllegalArgumentException.class, () -> {
             formulaService.delete(formulaId);
         }, "Debe lanzar excepción si la fórmula tiene detalles.");
+
         verify(formulaRepository, never()).delete(any(Formula.class));
     }
 }
