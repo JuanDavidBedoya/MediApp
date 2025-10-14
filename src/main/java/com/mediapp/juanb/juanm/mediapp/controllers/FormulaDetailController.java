@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mediapp.juanb.juanm.mediapp.dtos.FormulaDetailRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.FormulaDetailResponseDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.FormulaDetailsBulkRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.services.FormulaDetailService;
 
 import jakarta.validation.Valid;
@@ -37,6 +38,14 @@ public class FormulaDetailController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    // POST: Agregar varios medicamentos a una fórmula
+    @PostMapping("/bulk")
+    public ResponseEntity<List<FormulaDetailResponseDTO>> addFormulaDetailsBulk(@Valid @RequestBody FormulaDetailsBulkRequestDTO bulkRequest) {
+        List<FormulaDetailResponseDTO> responses = formulaDetailService.saveBulk(bulkRequest);
+        return new ResponseEntity<>(responses, HttpStatus.CREATED);
+    }
+
+    // GET: Obtener todos los detalles de fórmulas
     @GetMapping
     public ResponseEntity<List<FormulaDetailResponseDTO>> getAllFormulaDetails() {
         List<FormulaDetailResponseDTO> response = formulaDetailService.findAll();
