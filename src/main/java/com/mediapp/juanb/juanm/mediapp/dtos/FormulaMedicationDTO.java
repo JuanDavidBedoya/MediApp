@@ -2,9 +2,8 @@ package com.mediapp.juanb.juanm.mediapp.dtos;
 
 import java.util.UUID;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record FormulaMedicationDTO(
