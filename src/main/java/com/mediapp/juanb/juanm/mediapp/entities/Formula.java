@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.Date;
 
+@Entity
 @Table(name = "formulas")
 public class Formula {
 

@@ -2,6 +2,7 @@ package com.mediapp.juanb.juanm.mediapp.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -49,47 +50,77 @@ public class FormulaDetailService {
     }
 
     public List<FormulaDetailResponseDTO> saveBulk(FormulaDetailsBulkRequestDTO bulkRequest) {
-        // Verificar que la fórmula existe
-        Formula formula = formulaRepository.findById(bulkRequest.formulaId())
-            .orElseThrow(() -> new ResourceNotFoundException("Fórmula no encontrada con ID: " + bulkRequest.formulaId()));
+        try {
+            System.out.println("🔍 Iniciando saveBulk...");
+            System.out.println("🔍 Formula ID: " + bulkRequest.formulaId());
+            System.out.println("🔍 Cantidad de medicamentos: " + bulkRequest.medications().size());
 
-        List<FormulaDetailResponseDTO> savedDetails = new ArrayList<>();
-        List<FormulaDetail> detailsToSave = new ArrayList<>();
-
-        // Validar y preparar cada medicamento
-        for (FormulaMedicationDTO medDTO : bulkRequest.medications()) {
-            // Verificar que el medicamento existe
-            Medication medication = medicationRepository.findById(medDTO.medicationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Medicamento no encontrado con ID: " + medDTO.medicationId()));
-
-            // Verificar que no esté duplicado en esta petición
-            boolean isDuplicateInRequest = bulkRequest.medications().stream()
-                .filter(m -> m.medicationId().equals(medDTO.medicationId()))
-                .count() > 1;
-            
-            if (isDuplicateInRequest) {
-                throw new IllegalArgumentException("El medicamento con ID " + medDTO.medicationId() + " está duplicado en la petición.");
-            }
-
-            // Verificar que no esté ya en la fórmula
-            formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(
-                bulkRequest.formulaId(), medDTO.medicationId())
-                .ifPresent(detail -> {
-                    throw new IllegalArgumentException("El medicamento '" + medication.getName() + "' ya está en la fórmula.");
+            // Verificar que la fórmula existe
+            Formula formula = formulaRepository.findById(bulkRequest.formulaId())
+                .orElseThrow(() -> {
+                    System.out.println("❌ Fórmula no encontrada: " + bulkRequest.formulaId());
+                    return new ResourceNotFoundException("Fórmula no encontrada con ID: " + bulkRequest.formulaId());
                 });
 
-            // Crear el detalle
-            FormulaDetail detail = new FormulaDetail(formula, medication, medDTO.quantity(), medDTO.dosage());
-            detailsToSave.add(detail);
-        }
+            System.out.println("✅ Fórmula encontrada: " + formula.getIdFormula());
 
-        // Guardar todos los detalles
-        List<FormulaDetail> saved = formulaDetailRepository.saveAll(detailsToSave);
-        
-        // Convertir a DTOs de respuesta
-        return saved.stream()
-            .map(formulaDetailMapper::toResponseDTO)
-            .collect(Collectors.toList());
+            List<FormulaDetailResponseDTO> savedDetails = new ArrayList<>();
+            List<FormulaDetail> detailsToSave = new ArrayList<>();
+
+            // Validar y preparar cada medicamento
+            for (FormulaMedicationDTO medDTO : bulkRequest.medications()) {
+                System.out.println("🔍 Procesando medicamento: " + medDTO.medicationId());
+                
+                // Verificar que el medicamento existe
+                Medication medication = medicationRepository.findById(medDTO.medicationId())
+                    .orElseThrow(() -> {
+                        System.out.println("❌ Medicamento no encontrado: " + medDTO.medicationId());
+                        return new ResourceNotFoundException("Medicamento no encontrado con ID: " + medDTO.medicationId());
+                    });
+
+                System.out.println("✅ Medicamento encontrado: " + medication.getName());
+
+                // Verificar que no esté duplicado en esta petición
+                boolean isDuplicateInRequest = bulkRequest.medications().stream()
+                    .filter(m -> m.medicationId().equals(medDTO.medicationId()))
+                    .count() > 1;
+                
+                if (isDuplicateInRequest) {
+                    System.out.println("❌ Medicamento duplicado en request: " + medDTO.medicationId());
+                    throw new IllegalArgumentException("El medicamento con ID " + medDTO.medicationId() + " está duplicado en la petición.");
+                }
+
+                // Verificar que no esté ya en la fórmula
+                Optional<FormulaDetail> existingDetail = formulaDetailRepository
+                    .findByFormulaIdFormulaAndMedicationIdMedication(bulkRequest.formulaId(), medDTO.medicationId());
+                
+                if (existingDetail.isPresent()) {
+                    System.out.println("❌ Medicamento ya existe en fórmula: " + medDTO.medicationId());
+                    throw new IllegalArgumentException("El medicamento '" + medication.getName() + "' ya está en la fórmula.");
+                }
+
+                // Crear el detalle
+                FormulaDetail detail = new FormulaDetail(formula, medication, medDTO.quantity(), medDTO.dosage());
+                detailsToSave.add(detail);
+                System.out.println("✅ Detalle creado para: " + medication.getName());
+            }
+
+            System.out.println("💾 Guardando " + detailsToSave.size() + " detalles...");
+            
+            // Guardar todos los detalles
+            List<FormulaDetail> saved = formulaDetailRepository.saveAll(detailsToSave);
+            System.out.println("✅ " + saved.size() + " detalles guardados exitosamente");
+            
+            // Convertir a DTOs de respuesta
+            return saved.stream()
+                .map(formulaDetailMapper::toResponseDTO)
+                .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            System.out.println("❌ ERROR en saveBulk: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Re-lanzar la excepción
+        }
     }
 
     public FormulaDetailResponseDTO update(UUID id, FormulaDetailRequestDTO requestDTO) {
