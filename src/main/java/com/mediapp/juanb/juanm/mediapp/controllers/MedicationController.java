@@ -7,7 +7,6 @@ import com.mediapp.juanb.juanm.mediapp.dtos.MedicationRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.MedicationResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.services.MedicationService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -20,9 +19,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/medicamentos")
+@RequestMapping("/medications")
 public class MedicationController {
 
     private MedicationService medicationService;
