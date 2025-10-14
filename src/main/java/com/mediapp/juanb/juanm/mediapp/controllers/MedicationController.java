@@ -31,28 +31,24 @@ public class MedicationController {
         this.medicationService=medicationService;
     }
 
-     // POST: Crear un nuevo medicamento
     @PostMapping
     public ResponseEntity<MedicationResponseDTO> createMedication(@Valid @RequestBody MedicationRequestDTO requestDTO) {
         MedicationResponseDTO response = medicationService.save(requestDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // GET: Obtener todos los medicamentos
     @GetMapping
     public ResponseEntity<List<MedicationResponseDTO>> getAllMedications() {
         List<MedicationResponseDTO> response = medicationService.findAll();
         return ResponseEntity.ok(response);
     }
 
-    // GET: Obtener un medicamento por ID
     @GetMapping("/{id}")
     public ResponseEntity<MedicationResponseDTO> getMedicationById(@PathVariable UUID id) {
         MedicationResponseDTO response = medicationService.findById(id);
         return ResponseEntity.ok(response);
     }
 
-    // PUT: Actualizar un medicamento existente
     @PutMapping("/{id}")
     public ResponseEntity<MedicationResponseDTO> updateMedication(@PathVariable UUID id, 
                                                                 @Valid @RequestBody MedicationRequestDTO requestDTO) {
@@ -60,7 +56,6 @@ public class MedicationController {
         return ResponseEntity.ok(response);
     }
 
-    // DELETE: Eliminar un medicamento por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMedication(@PathVariable UUID id) {
         medicationService.delete(id);

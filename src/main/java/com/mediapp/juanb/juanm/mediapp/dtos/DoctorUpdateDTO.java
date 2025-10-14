@@ -1,12 +1,11 @@
 package com.mediapp.juanb.juanm.mediapp.dtos;
 
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record DoctorRequestDTO(
-    @NotBlank(message = "La cédula no puede estar vacía")
-    String cedula,
+public record DoctorUpdateDTO(
 
     @NotBlank(message = "El nombre no puede estar vacío")
     String name,

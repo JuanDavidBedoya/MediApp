@@ -2,6 +2,7 @@ package com.mediapp.juanb.juanm.mediapp.controllers;
 
 import com.mediapp.juanb.juanm.mediapp.dtos.DoctorRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.DoctorResponseDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.DoctorUpdateDTO;
 import com.mediapp.juanb.juanm.mediapp.services.DoctorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class DoctorController {
     }
 
     @PutMapping("/{cedula}")
-    public ResponseEntity<DoctorResponseDTO> update(@PathVariable("cedula") String cedula, @Valid @RequestBody DoctorRequestDTO doctorDTO) {
+    public ResponseEntity<DoctorResponseDTO> update(@PathVariable("cedula") String cedula, @Valid @RequestBody DoctorUpdateDTO doctorDTO) {
         DoctorResponseDTO updatedDoctor = doctorService.update(cedula, doctorDTO);
         return ResponseEntity.ok(updatedDoctor);
     }

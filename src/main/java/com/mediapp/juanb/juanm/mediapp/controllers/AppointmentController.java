@@ -31,28 +31,24 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    // POST: Agendar una nueva cita
     @PostMapping
     public ResponseEntity<AppointmentResponseDTO> scheduleAppointment(@Valid @RequestBody AppointmentRequestDTO requestDTO) {
         AppointmentResponseDTO response = appointmentService.save(requestDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // GET: Obtener todas las citas
     @GetMapping
     public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointments() {
         List<AppointmentResponseDTO> response = appointmentService.findAll();
         return ResponseEntity.ok(response);
     }
 
-    // GET: Obtener una cita por ID
     @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponseDTO> getAppointmentById(@PathVariable UUID id) {
         AppointmentResponseDTO response = appointmentService.findById(id);
         return ResponseEntity.ok(response);
     }
 
-    // PUT: Reprogramar/actualizar una cita existente
     @PutMapping("/{id}")
     public ResponseEntity<AppointmentResponseDTO> updateAppointment(@PathVariable UUID id, 
                                                                   @Valid @RequestBody AppointmentRequestDTO requestDTO) {
@@ -60,7 +56,6 @@ public class AppointmentController {
         return ResponseEntity.ok(response);
     }
 
-    // DELETE: Cancelar una cita por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAppointment(@PathVariable UUID id) {
         appointmentService.delete(id);

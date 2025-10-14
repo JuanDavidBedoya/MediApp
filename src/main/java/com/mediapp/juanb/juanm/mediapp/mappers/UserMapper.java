@@ -22,8 +22,6 @@ public class UserMapper {
         String epsName = (user.getEps() != null) ? user.getEps().getName() : null;
         String cityName = (user.getCity() != null) ? user.getCity().getName() : null;
 
-
-        // Extraer los números de teléfono de la relación UserPhone
         List<String> phoneNumbers = user.getUserPhones() != null ?
             user.getUserPhones().stream()
                 .map(userPhone -> userPhone.getPhone().getPhone())

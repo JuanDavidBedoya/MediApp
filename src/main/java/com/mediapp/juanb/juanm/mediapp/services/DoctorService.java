@@ -2,6 +2,7 @@ package com.mediapp.juanb.juanm.mediapp.services;
 
 import com.mediapp.juanb.juanm.mediapp.dtos.DoctorRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.DoctorResponseDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.DoctorUpdateDTO;
 import com.mediapp.juanb.juanm.mediapp.entities.Doctor;
 import com.mediapp.juanb.juanm.mediapp.entities.Speciality;
 import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceAlreadyExistsException;
@@ -66,7 +67,7 @@ public class DoctorService {
         return doctorMapper.toResponseDTO(savedDoctor);
     }
 
-    public DoctorResponseDTO update(String cedula, DoctorRequestDTO doctorDTO) {
+    public DoctorResponseDTO update(String cedula, DoctorUpdateDTO doctorDTO) {
         Doctor existingDoctor = doctorRepository.findById(cedula)
 
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor no encontrado con cédula: " + cedula));

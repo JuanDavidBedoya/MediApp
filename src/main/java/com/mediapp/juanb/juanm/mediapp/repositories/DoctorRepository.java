@@ -16,6 +16,8 @@ public interface DoctorRepository extends JpaRepository <Doctor, String>{
 
     @Query("SELECT COUNT(d) > 0 FROM Doctor d WHERE d.email = :email AND d.cedula != :cedula")
     boolean existsByEmailAndCedulaNot(@Param("email") String email, @Param("cedula") String cedula);
+
+    Optional<Doctor> findByCedula(String cedula);
 }
 
 

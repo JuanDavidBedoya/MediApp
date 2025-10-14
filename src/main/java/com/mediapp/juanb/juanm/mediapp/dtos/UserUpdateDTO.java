@@ -14,7 +14,6 @@ public record UserUpdateDTO(
     @Email
     String email,
 
-    // La contraseña es opcional al actualizar. Si viene nula o vacía, no se cambia.
     @Size(min = 8, message = "La nueva contraseña debe tener al menos 8 caracteres")
     String contrasena,
 
@@ -24,6 +23,5 @@ public record UserUpdateDTO(
     @NotBlank(message = "El nombre de la ciudad es obligatorio")
     String cityName,
 
-    // La lista de teléfonos puede ser nula o vacía si no se desea actualizar.
     List<String> phones
 ) {}

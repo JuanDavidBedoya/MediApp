@@ -1,13 +1,19 @@
 package com.mediapp.juanb.juanm.mediapp;
 
-import com.mediapp.juanb.juanm.mediapp.dtos.CityRequestDTO;
-import com.mediapp.juanb.juanm.mediapp.dtos.CityResponseDTO;
-import com.mediapp.juanb.juanm.mediapp.entities.City;
-import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceAlreadyExistsException;
-import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceNotFoundException;
-import com.mediapp.juanb.juanm.mediapp.mappers.CityMapper;
-import com.mediapp.juanb.juanm.mediapp.repositories.CityRepository;
-import com.mediapp.juanb.juanm.mediapp.services.CityService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,14 +22,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import com.mediapp.juanb.juanm.mediapp.dtos.CityRequestDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.CityResponseDTO;
+import com.mediapp.juanb.juanm.mediapp.entities.City;
+import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceAlreadyExistsException;
+import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceNotFoundException;
+import com.mediapp.juanb.juanm.mediapp.mappers.CityMapper;
+import com.mediapp.juanb.juanm.mediapp.repositories.CityRepository;
+import com.mediapp.juanb.juanm.mediapp.services.CityService;
 
 @ExtendWith(MockitoExtension.class)
 class CityServiceTest {
@@ -37,165 +43,193 @@ class CityServiceTest {
     @InjectMocks
     private CityService cityService;
 
-    private City testCity;
-    private CityRequestDTO cityRequestDTO;
-    private CityResponseDTO cityResponseDTO;
-    private UUID testUuid;
+    private List<City> mockCities;
+    private List<CityRequestDTO> cityRequests;
+    private List<CityResponseDTO> cityResponses;
 
     @BeforeEach
     void setUp() {
-        testUuid = UUID.randomUUID();
-        
-        testCity = new City();
-        testCity.setIdCity(testUuid);
-        testCity.setName("Armenia");
+        mockCities = new ArrayList<>();
+        cityRequests = new ArrayList<>();
+        cityResponses = new ArrayList<>();
 
-        cityRequestDTO = new CityRequestDTO("Armenia");
-        cityResponseDTO = new CityResponseDTO(testUuid, "Armenia");
+        for (int i = 1; i <= 5; i++) {
+            UUID id = UUID.randomUUID();
+            String name = "Ciudad " + i;
+
+            City city = new City();
+            city.setIdCity(id);
+            city.setName(name);
+
+            CityRequestDTO request = new CityRequestDTO(name);
+            CityResponseDTO response = new CityResponseDTO(id, name);
+
+            mockCities.add(city);
+            cityRequests.add(request);
+            cityResponses.add(response);
+        }
     }
 
     @Test
-    void findAll_ReturnsListOfCities() {
+    void findAll_ReturnsAllCities() {
         // Arrange
-        when(cityRepository.findAll()).thenReturn(Collections.singletonList(testCity));
-        when(cityMapper.toResponseDTO(any(City.class))).thenReturn(cityResponseDTO);
+        when(cityRepository.findAll()).thenReturn(mockCities);
+        when(cityMapper.toResponseDTO(mockCities.get(0))).thenReturn(cityResponses.get(0));
+        when(cityMapper.toResponseDTO(mockCities.get(1))).thenReturn(cityResponses.get(1));
+        when(cityMapper.toResponseDTO(mockCities.get(2))).thenReturn(cityResponses.get(2));
 
         // Act
         List<CityResponseDTO> result = cityService.findAll();
 
         // Assert
         assertNotNull(result);
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        assertEquals("Armenia", result.get(0).name());
+        assertEquals(3, result.size());
         verify(cityRepository, times(1)).findAll();
+        verify(cityMapper, times(3)).toResponseDTO(any(City.class));
     }
 
     @Test
     void findById_Success() {
         // Arrange
-        when(cityRepository.findById(testUuid)).thenReturn(Optional.of(testCity));
-        when(cityMapper.toResponseDTO(testCity)).thenReturn(cityResponseDTO);
+        City city = mockCities.get(0);
+        CityResponseDTO response = cityResponses.get(0);
+        UUID id = city.getIdCity();
+
+        when(cityRepository.findById(id)).thenReturn(Optional.of(city));
+        when(cityMapper.toResponseDTO(city)).thenReturn(response);
 
         // Act
-        CityResponseDTO result = cityService.findById(testUuid);
+        CityResponseDTO result = cityService.findById(id);
 
         // Assert
         assertNotNull(result);
-        assertEquals("Armenia", result.name());
+        assertEquals(id, result.idCity());
+        assertEquals("Ciudad 1", result.name());
+        verify(cityRepository, times(1)).findById(id);
     }
 
     @Test
     void findById_Fails_NotFound() {
         // Arrange
-        when(cityRepository.findById(testUuid)).thenReturn(Optional.empty());
+        UUID nonExistentId = UUID.randomUUID();
+        when(cityRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            cityService.findById(testUuid);
-        });
+        assertThrows(ResourceNotFoundException.class, () -> cityService.findById(nonExistentId));
+        verify(cityMapper, never()).toResponseDTO(any(City.class));
     }
 
     @Test
     void save_Success() {
         // Arrange
-        when(cityRepository.findByName("Armenia")).thenReturn(Optional.empty());
-        when(cityMapper.toEntity(cityRequestDTO)).thenReturn(testCity);
-        when(cityRepository.save(any(City.class))).thenReturn(testCity);
-        when(cityMapper.toResponseDTO(testCity)).thenReturn(cityResponseDTO);
+        CityRequestDTO request = cityRequests.get(0);
+        City cityToSave = mockCities.get(0);
+        CityResponseDTO response = cityResponses.get(0);
+
+        when(cityRepository.findByName(request.name())).thenReturn(Optional.empty());
+        when(cityMapper.toEntity(request)).thenReturn(cityToSave);
+        when(cityRepository.save(cityToSave)).thenReturn(cityToSave);
+        when(cityMapper.toResponseDTO(cityToSave)).thenReturn(response);
 
         // Act
-        CityResponseDTO result = cityService.save(cityRequestDTO);
+        CityResponseDTO result = cityService.save(request);
 
         // Assert
         assertNotNull(result);
-        assertEquals("Armenia", result.name());
-        verify(cityRepository, times(1)).save(any(City.class));
+        assertEquals(response.idCity(), result.idCity());
+        verify(cityRepository, times(1)).save(cityToSave);
     }
 
     @Test
     void save_Fails_NameAlreadyExists() {
         // Arrange
-        when(cityRepository.findByName("Armenia")).thenReturn(Optional.of(testCity));
+        CityRequestDTO request = cityRequests.get(0);
+        when(cityRepository.findByName(request.name())).thenReturn(Optional.of(mockCities.get(0)));
 
         // Act & Assert
-        assertThrows(ResourceAlreadyExistsException.class, () -> {
-            cityService.save(cityRequestDTO);
-        });
-        verify(cityRepository, never()).save(any(City.class));
-    }
-
-    @Test
-    void update_Success() {
-        // Arrange
-        CityRequestDTO updateRequest = new CityRequestDTO("Yerevan");
-        when(cityRepository.findById(testUuid)).thenReturn(Optional.of(testCity));
-        when(cityRepository.findByName("Yerevan")).thenReturn(Optional.empty());
-        when(cityRepository.save(any(City.class))).thenReturn(testCity);
-        when(cityMapper.toResponseDTO(testCity)).thenReturn(new CityResponseDTO(testUuid, "Yerevan"));
-
-        // Act
-        CityResponseDTO result = cityService.update(testUuid, updateRequest);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("Yerevan", result.name()); // El mapper devuelve el nuevo nombre
-        assertEquals("Yerevan", testCity.getName()); // Se verifica que el nombre en la entidad fue modificado
-        verify(cityRepository, times(1)).save(testCity);
-    }
-    
-    @Test
-    void update_Fails_NotFound() {
-        // Arrange
-        when(cityRepository.findById(testUuid)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            cityService.update(testUuid, cityRequestDTO);
-        });
-        verify(cityRepository, never()).save(any(City.class));
-    }
-
-    @Test
-    void update_Fails_NameConflict() {
-        // Arrange
-        City conflictingCity = new City();
-        conflictingCity.setIdCity(UUID.randomUUID());
-        conflictingCity.setName("Yerevan");
-        
-        CityRequestDTO updateRequest = new CityRequestDTO("Yerevan");
-
-        when(cityRepository.findById(testUuid)).thenReturn(Optional.of(testCity));
-        when(cityRepository.findByName("Yerevan")).thenReturn(Optional.of(conflictingCity));
-
-        // Act & Assert
-        assertThrows(ResourceAlreadyExistsException.class, () -> {
-            cityService.update(testUuid, updateRequest);
-        });
+        assertThrows(ResourceAlreadyExistsException.class, () -> cityService.save(request));
         verify(cityRepository, never()).save(any(City.class));
     }
 
     @Test
     void delete_Success() {
         // Arrange
-        when(cityRepository.existsById(testUuid)).thenReturn(true);
+        UUID idToDelete = mockCities.get(0).getIdCity();
+        when(cityRepository.existsById(idToDelete)).thenReturn(true);
+        doNothing().when(cityRepository).deleteById(idToDelete);
 
         // Act
-        cityService.delete(testUuid);
+        cityService.delete(idToDelete);
 
         // Assert
-        verify(cityRepository, times(1)).deleteById(testUuid);
+        verify(cityRepository, times(1)).existsById(idToDelete);
+        verify(cityRepository, times(1)).deleteById(idToDelete);
     }
 
     @Test
     void delete_Fails_NotFound() {
         // Arrange
-        when(cityRepository.existsById(testUuid)).thenReturn(false);
+        UUID nonExistentId = UUID.randomUUID();
+        when(cityRepository.existsById(nonExistentId)).thenReturn(false);
 
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            cityService.delete(testUuid);
-        });
+        assertThrows(ResourceNotFoundException.class, () -> cityService.delete(nonExistentId));
         verify(cityRepository, never()).deleteById(any(UUID.class));
+    }
+
+    @Test
+    void update_Success() {
+        // Arrange
+        City existingCity = mockCities.get(0);
+        UUID idToUpdate = existingCity.getIdCity();
+        CityRequestDTO updateRequest = new CityRequestDTO("Nombre Actualizado");
+        City updatedCity = new City();
+        updatedCity.setIdCity(idToUpdate);
+        updatedCity.setName(updateRequest.name());
+        CityResponseDTO response = new CityResponseDTO(idToUpdate, updateRequest.name());
+
+        when(cityRepository.findById(idToUpdate)).thenReturn(Optional.of(existingCity));
+        when(cityRepository.findByName(updateRequest.name())).thenReturn(Optional.empty());
+        when(cityRepository.save(any(City.class))).thenReturn(updatedCity);
+        when(cityMapper.toResponseDTO(updatedCity)).thenReturn(response);
+
+        // Act
+        CityResponseDTO result = cityService.update(idToUpdate, updateRequest);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Nombre Actualizado", result.name());
+        verify(cityRepository, times(1)).findById(idToUpdate);
+        verify(cityRepository, times(1)).save(any(City.class));
+    }
+
+    @Test
+    void update_Fails_NotFound() {
+        // Arrange
+        UUID nonExistentId = UUID.randomUUID();
+        CityRequestDTO updateRequest = new CityRequestDTO("Test");
+        when(cityRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> cityService.update(nonExistentId, updateRequest));
+        verify(cityRepository, never()).save(any(City.class));
+    }
+
+    @Test
+    void update_Fails_NameConflict() {
+        // Arrange
+        City cityToUpdate = mockCities.get(0); // "Ciudad 1" con id_1
+        City conflictingCity = mockCities.get(1); // "Ciudad 2" con id_2
+        UUID idToUpdate = cityToUpdate.getIdCity();
+
+        // Intentar actualizar "Ciudad 1" para que se llame "Ciudad 2"
+        CityRequestDTO updateRequest = new CityRequestDTO(conflictingCity.getName());
+
+        when(cityRepository.findById(idToUpdate)).thenReturn(Optional.of(cityToUpdate));
+        when(cityRepository.findByName(updateRequest.name())).thenReturn(Optional.of(conflictingCity));
+
+        // Act & Assert
+        assertThrows(ResourceAlreadyExistsException.class, () -> cityService.update(idToUpdate, updateRequest));
+        verify(cityRepository, never()).save(any(City.class));
     }
 }

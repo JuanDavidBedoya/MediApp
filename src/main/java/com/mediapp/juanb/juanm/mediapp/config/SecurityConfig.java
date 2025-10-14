@@ -4,6 +4,7 @@ import com.mediapp.juanb.juanm.mediapp.config.filters.JwtAuthFilter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -47,19 +48,42 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .cors(withDefaults())
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                // --- CAMBIO PARA PRUEBAS ---
-                // Se reemplazan todas las reglas específicas por una que lo permite todo.
-                .anyRequest().permitAll()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .cors(withDefaults())
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            // 1. Para cualquier persona
+            .requestMatchers("/auth/**").permitAll()
 
-        return http.build();
-    }
+            // 2. Para doctores
+            .requestMatchers("/formulas/**").hasRole("DOCTOR")
+            .requestMatchers("/formula-details/**").hasRole("DOCTOR")
+            .requestMatchers(HttpMethod.POST, "/medicamentos", "/especialidades", "/cities", "/eps", "/phones").hasRole("DOCTOR")
+            .requestMatchers(HttpMethod.PUT, "/medicamentos/**", "/especialidades/**", "/cities/**", "/eps/**", "/phones/**").hasRole("DOCTOR")
+            .requestMatchers(HttpMethod.DELETE, "/medicamentos/**", "/especialidades/**", "/cities/**", "/eps/**", "/phones/**").hasRole("DOCTOR")
+            .requestMatchers(HttpMethod.PUT, "/doctors/**", "/users/**").hasRole("DOCTOR")
+            .requestMatchers(HttpMethod.DELETE, "/doctors/**", "/users/**").hasRole("DOCTOR")
+            .requestMatchers(HttpMethod.GET, "/users", "/appointments").hasRole("DOCTOR")
+
+            // 3. Para usuarios
+            .requestMatchers(HttpMethod.POST, "/appointments").hasRole("USER")
+
+            //. 4 Para doctores y usuarios
+            .requestMatchers(HttpMethod.GET, "/doctors/**", "/medicamentos/**", "/especialidades/**", "/cities/**", "/eps/**", "/phones/**").hasAnyRole("DOCTOR", "USER")
+            .requestMatchers(HttpMethod.GET, "/appointments/**", "/users/**").hasAnyRole("DOCTOR", "USER")
+            .requestMatchers(HttpMethod.PUT, "/appointments/**").hasAnyRole("DOCTOR", "USER")
+            .requestMatchers(HttpMethod.DELETE, "/appointments/**").hasAnyRole("DOCTOR", "USER")
+            .requestMatchers("/user-phones/**").hasAnyRole("DOCTOR", "USER")
+            
+
+            // 5. Cualquier otra
+            .anyRequest().authenticated()
+        )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+}
 }

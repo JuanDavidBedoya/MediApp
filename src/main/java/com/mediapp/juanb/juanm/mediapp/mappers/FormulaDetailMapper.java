@@ -26,12 +26,10 @@ public class FormulaDetailMapper {
         if (dto == null) return null;
         FormulaDetail entity = new FormulaDetail();
         
-        // Buscar y asignar Fórmula
         Formula formula = formulaRepository.findById(dto.formulaId())
             .orElseThrow(() -> new ResourceNotFoundException("Fórmula no encontrada con ID: " + dto.formulaId()));
         entity.setFormula(formula);
         
-        // Buscar y asignar Medicamento
         Medication medication = medicationRepository.findById(dto.medicationId())
             .orElseThrow(() -> new ResourceNotFoundException("Medicamento no encontrado con ID: " + dto.medicationId()));
         entity.setMedication(medication);

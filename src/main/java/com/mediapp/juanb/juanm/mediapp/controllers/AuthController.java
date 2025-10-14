@@ -1,6 +1,8 @@
 package com.mediapp.juanb.juanm.mediapp.controllers;
 
 import com.mediapp.juanb.juanm.mediapp.dtos.AuthResponseDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.DoctorRequestDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.DoctorResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.LoginRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.UserRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.UserResponseDTO;
@@ -34,5 +36,11 @@ public class AuthController {
     public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserRequestDTO request) {
         UserResponseDTO newUser = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    }
+
+    @PostMapping("/register/doctor")
+    public ResponseEntity<DoctorResponseDTO> registerDoctor(@Valid @RequestBody DoctorRequestDTO request) {
+        DoctorResponseDTO newDoctor = authService.registerDoctor(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newDoctor);
     }
 }

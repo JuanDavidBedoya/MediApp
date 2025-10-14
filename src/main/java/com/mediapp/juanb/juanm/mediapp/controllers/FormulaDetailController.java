@@ -31,28 +31,24 @@ public class FormulaDetailController {
         this.formulaDetailService = formulaDetailService;
     }
 
-    // POST: Agregar un medicamento a una fórmula (crear un detalle)
     @PostMapping
     public ResponseEntity<FormulaDetailResponseDTO> addFormulaDetail(@Valid @RequestBody FormulaDetailRequestDTO requestDTO) {
         FormulaDetailResponseDTO response = formulaDetailService.save(requestDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // GET: Obtener todos los detalles de fórmulas
     @GetMapping
     public ResponseEntity<List<FormulaDetailResponseDTO>> getAllFormulaDetails() {
         List<FormulaDetailResponseDTO> response = formulaDetailService.findAll();
         return ResponseEntity.ok(response);
     }
 
-    // GET: Obtener un detalle por ID
     @GetMapping("/{id}")
     public ResponseEntity<FormulaDetailResponseDTO> getFormulaDetailById(@PathVariable UUID id) {
         FormulaDetailResponseDTO response = formulaDetailService.findById(id);
         return ResponseEntity.ok(response);
     }
 
-    // PUT: Actualizar la dosis o cantidad de un medicamento en una fórmula
     @PutMapping("/{id}")
     public ResponseEntity<FormulaDetailResponseDTO> updateFormulaDetail(@PathVariable UUID id, 
                                                                       @Valid @RequestBody FormulaDetailRequestDTO requestDTO) {
@@ -60,7 +56,6 @@ public class FormulaDetailController {
         return ResponseEntity.ok(response);
     }
 
-    // DELETE: Eliminar un medicamento de una fórmula (eliminar el detalle)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFormulaDetail(@PathVariable UUID id) {
         formulaDetailService.delete(id);

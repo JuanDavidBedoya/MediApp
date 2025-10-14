@@ -24,12 +24,10 @@ public class FormulaMapper {
         if (dto == null) return null;
         Formula entity = new Formula();
         
-        // Buscar y validar la existencia de la cita
         Appointment appointment = appointmentRepository.findById(dto.appointmentId())
             .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada con ID: " + dto.appointmentId()));
         entity.setAppointment(appointment);
         
-        // Establecer la fecha actual de generación
         entity.setDate(new Date()); 
         return entity;
     }

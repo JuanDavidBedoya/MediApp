@@ -33,7 +33,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas de validez
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) //10 horas de validez
                 .signWith(getSignInKey())
                 .compact();
     }
@@ -56,7 +56,6 @@ public class JwtService {
     }
 
     private SecretKey getSignInKey() {
-        // Ahora leemos la clave secreta desde el objeto de propiedades
         byte[] keyBytes = jwtProperties.secret().getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }

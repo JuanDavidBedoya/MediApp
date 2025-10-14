@@ -31,28 +31,24 @@ public class FormulaController {
         this.formulaService = formulaService;
     }
 
-    // POST: Generar una nueva fórmula para una cita
     @PostMapping
     public ResponseEntity<FormulaResponseDTO> createFormula(@Valid @RequestBody FormulaRequestDTO requestDTO) {
         FormulaResponseDTO response = formulaService.save(requestDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // GET: Obtener todas las fórmulas
     @GetMapping
     public ResponseEntity<List<FormulaResponseDTO>> getAllFormulas() {
         List<FormulaResponseDTO> response = formulaService.findAll();
         return ResponseEntity.ok(response);
     }
 
-    // GET: Obtener una fórmula por ID
     @GetMapping("/{id}")
     public ResponseEntity<FormulaResponseDTO> getFormulaById(@PathVariable UUID id) {
         FormulaResponseDTO response = formulaService.findById(id);
         return ResponseEntity.ok(response);
     }
 
-    // PUT: Actualizar una fórmula (ej. actualizar fecha de emisión)
     @PutMapping("/{id}")
     public ResponseEntity<FormulaResponseDTO> updateFormula(@PathVariable UUID id, 
                                                           @Valid @RequestBody FormulaRequestDTO requestDTO) {
@@ -60,7 +56,6 @@ public class FormulaController {
         return ResponseEntity.ok(response);
     }
 
-    // DELETE: Eliminar una fórmula por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFormula(@PathVariable UUID id) {
         formulaService.delete(id);
