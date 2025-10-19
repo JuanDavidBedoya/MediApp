@@ -81,9 +81,9 @@ class SpecialityServiceTest {
         List<SpecialityResponseDTO> result = specialityService.findAll();
 
         assertNotNull(result);
-        assertEquals(3, result.size());
+        assertEquals(5, result.size());
         verify(specialityRepository, times(1)).findAll();
-        verify(specialityMapper, times(3)).toResponseDTO(any(Speciality.class));
+        verify(specialityMapper, times(5)).toResponseDTO(any(Speciality.class));
     }
 
     @Test

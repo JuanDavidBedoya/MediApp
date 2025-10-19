@@ -3,6 +3,7 @@ package com.mediapp.juanb.juanm.mediapp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
@@ -30,6 +31,8 @@ import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceNotFoundException;
 import com.mediapp.juanb.juanm.mediapp.mappers.CityMapper;
 import com.mediapp.juanb.juanm.mediapp.repositories.CityRepository;
 import com.mediapp.juanb.juanm.mediapp.services.CityService;
+
+import io.jsonwebtoken.lang.Collections;
 
 @ExtendWith(MockitoExtension.class)
 class CityServiceTest {
@@ -81,9 +84,9 @@ class CityServiceTest {
         List<CityResponseDTO> result = cityService.findAll();
 
         assertNotNull(result);
-        assertEquals(3, result.size());
+        assertEquals(5, result.size());
         verify(cityRepository, times(1)).findAll();
-        verify(cityMapper, times(3)).toResponseDTO(any(City.class));
+        verify(cityMapper, times(5)).toResponseDTO(any(City.class));
     }
 
     @Test
@@ -111,6 +114,17 @@ class CityServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () -> cityService.findById(nonExistentId));
         verify(cityMapper, never()).toResponseDTO(any(City.class));
+    }
+
+    @Test
+    void findAll_ReturnsEmptyList() {
+        when(cityRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<CityResponseDTO> result = cityService.findAll();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(cityRepository, times(1)).findAll();
     }
 
     @Test

@@ -81,9 +81,9 @@ class EpsServiceTest {
         List<EpsResponseDTO> result = epsService.findAll();
 
         assertNotNull(result);
-        assertEquals(3, result.size());
+        assertEquals(5, result.size());
         verify(epsRepository, times(1)).findAll();
-        verify(epsMapper, times(3)).toResponseDTO(any(Eps.class));
+        verify(epsMapper, times(5)).toResponseDTO(any(Eps.class));
     }
 
     @Test

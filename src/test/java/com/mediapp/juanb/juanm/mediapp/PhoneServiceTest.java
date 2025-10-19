@@ -72,18 +72,17 @@ class PhoneServiceTest {
 
     @Test
     void findAll_ReturnsAllPhones() {
-
         when(phoneRepository.findAll()).thenReturn(mockPhones);
-        when(phoneMapper.toResponseDTO(mockPhones.get(0))).thenReturn(phoneResponses.get(0));
-        when(phoneMapper.toResponseDTO(mockPhones.get(1))).thenReturn(phoneResponses.get(1));
-        when(phoneMapper.toResponseDTO(mockPhones.get(2))).thenReturn(phoneResponses.get(2));
+        for (int i = 0; i < mockPhones.size(); i++) {
+            when(phoneMapper.toResponseDTO(mockPhones.get(i))).thenReturn(phoneResponses.get(i));
+        }
 
         List<PhoneResponseDTO> result = phoneService.findAll();
 
         assertNotNull(result);
         assertEquals(5, result.size());
         verify(phoneRepository, times(1)).findAll();
-        verify(phoneMapper, times(3)).toResponseDTO(any(Phone.class));
+        verify(phoneMapper, times(5)).toResponseDTO(any(Phone.class));
     }
 
     @Test
