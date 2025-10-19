@@ -30,8 +30,8 @@ public class FormulaDetailMapper {
             .orElseThrow(() -> new ResourceNotFoundException("Fórmula no encontrada con ID: " + dto.formulaId()));
         entity.setFormula(formula);
         
-        Medication medication = medicationRepository.findById(dto.medicationId())
-            .orElseThrow(() -> new ResourceNotFoundException("Medicamento no encontrado con ID: " + dto.medicationId()));
+        Medication medication = medicationRepository.findByName(dto.name())
+            .orElseThrow(() -> new ResourceNotFoundException("Medicamento no encontrado con nombre: " + dto.name()));
         entity.setMedication(medication);
 
         entity.setQuantity(dto.quantity());
@@ -44,7 +44,7 @@ public class FormulaDetailMapper {
         return new FormulaDetailResponseDTO(
             entity.getIdFormulaDetail(),
             entity.getFormula().getIdFormula(),
-            entity.getMedication().getIdMedication(),
+            entity.getMedication().getName(),
             entity.getQuantity(),
             entity.getDosage()
         );

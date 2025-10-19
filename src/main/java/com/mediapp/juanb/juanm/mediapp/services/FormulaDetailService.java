@@ -37,8 +37,8 @@ public class FormulaDetailService {
     }
 
     public FormulaDetailResponseDTO save(FormulaDetailRequestDTO requestDTO) {
-        formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(
-            requestDTO.formulaId(), requestDTO.medicationId())
+        formulaDetailRepository.findByFormulaIdFormulaAndMedicationName(
+            requestDTO.formulaId(), requestDTO.name())
             .ifPresent(detail -> {
                 throw new IllegalArgumentException("El medicamento ya está listado en esta fórmula.");
             });
@@ -69,33 +69,33 @@ public class FormulaDetailService {
 
             // Validar y preparar cada medicamento
             for (FormulaMedicationDTO medDTO : bulkRequest.medications()) {
-                System.out.println("🔍 Procesando medicamento: " + medDTO.medicationId());
+                System.out.println("🔍 Procesando medicamento: " + medDTO.name());
                 
                 // Verificar que el medicamento existe
-                Medication medication = medicationRepository.findById(medDTO.medicationId())
+                Medication medication = medicationRepository.findByName(medDTO.name())
                     .orElseThrow(() -> {
-                        System.out.println("❌ Medicamento no encontrado: " + medDTO.medicationId());
-                        return new ResourceNotFoundException("Medicamento no encontrado con ID: " + medDTO.medicationId());
+                        System.out.println("❌ Medicamento no encontrado: " + medDTO.name());
+                        return new ResourceNotFoundException("Medicamento no encontrado con ID: " + medDTO.name());
                     });
 
                 System.out.println("✅ Medicamento encontrado: " + medication.getName());
 
                 // Verificar que no esté duplicado en esta petición
                 boolean isDuplicateInRequest = bulkRequest.medications().stream()
-                    .filter(m -> m.medicationId().equals(medDTO.medicationId()))
+                    .filter(m -> m.name().equals(medDTO.name()))
                     .count() > 1;
                 
                 if (isDuplicateInRequest) {
-                    System.out.println("❌ Medicamento duplicado en request: " + medDTO.medicationId());
-                    throw new IllegalArgumentException("El medicamento con ID " + medDTO.medicationId() + " está duplicado en la petición.");
+                    System.out.println("❌ Medicamento duplicado en request: " + medDTO.name());
+                    throw new IllegalArgumentException("El medicamento con ID " + medDTO.name() + " está duplicado en la petición.");
                 }
 
                 // Verificar que no esté ya en la fórmula
                 Optional<FormulaDetail> existingDetail = formulaDetailRepository
-                    .findByFormulaIdFormulaAndMedicationIdMedication(bulkRequest.formulaId(), medDTO.medicationId());
+                    .findByFormulaIdFormulaAndMedicationName(bulkRequest.formulaId(), medDTO.name());
                 
                 if (existingDetail.isPresent()) {
-                    System.out.println("❌ Medicamento ya existe en fórmula: " + medDTO.medicationId());
+                    System.out.println("❌ Medicamento ya existe en fórmula: " + medDTO.name());
                     throw new IllegalArgumentException("El medicamento '" + medication.getName() + "' ya está en la fórmula.");
                 }
 
@@ -128,7 +128,7 @@ public class FormulaDetailService {
             .orElseThrow(() -> new ResourceNotFoundException("Detalle de Fórmula no encontrado con ID: " + id));
 
         if (!existingDetail.getFormula().getIdFormula().equals(requestDTO.formulaId()) || 
-            !existingDetail.getMedication().getIdMedication().equals(requestDTO.medicationId())) {
+            !existingDetail.getMedication().getName().equals(requestDTO.name())) {
             throw new IllegalArgumentException("No se permite cambiar la fórmula o el medicamento en un detalle de fórmula existente. Debe eliminar y crear uno nuevo.");
         }
 

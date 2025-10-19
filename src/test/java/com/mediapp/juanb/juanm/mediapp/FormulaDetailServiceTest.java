@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,39 +47,39 @@ class FormulaDetailServiceTest {
     @Mock
     private FormulaDetailMapper formulaDetailMapper;
 
-    @InjectMocks
-    private FormulaDetailService formulaDetailService;
-
-     @Mock
+    @Mock
     private FormulaRepository formulaRepository;
 
     @Mock
     private MedicationRepository medicationRepository;
 
+    @InjectMocks
+    private FormulaDetailService formulaDetailService;
+
     private List<FormulaDetailRequestDTO> requestList;
     private List<FormulaDetail> mockDetails;
     private List<UUID> formulaIds;
-    private List<UUID> medicationIds;
+    private List<String> medicationNames;
 
     @BeforeEach
     void setUp() {
         requestList = new ArrayList<>();
         mockDetails = new ArrayList<>();
         formulaIds = new ArrayList<>();
-        medicationIds = new ArrayList<>();
+        medicationNames = new ArrayList<>();
 
         for (int i = 1; i <= 5; i++) {
             UUID formulaId = UUID.randomUUID();
-            UUID medicationId = UUID.randomUUID();
+            String name = "Medicamento " + i;
             UUID detailId = UUID.randomUUID();
 
             formulaIds.add(formulaId);
-            medicationIds.add(medicationId);
+            medicationNames.add(name);
 
             FormulaDetailRequestDTO req = new FormulaDetailRequestDTO(
                     formulaId,
-                    medicationId,
-                    i * 2, 
+                    name,
+                    i * 2,
                     "Cada " + (6 + i * 2) + " horas"
             );
             requestList.add(req);
@@ -90,58 +91,15 @@ class FormulaDetailServiceTest {
             formula.setIdFormula(formulaId);
 
             Medication medication = new Medication();
-            medication.setIdMedication(medicationId);
+            medication.setName(name);
 
             detail.setFormula(formula);
             detail.setMedication(medication);
             detail.setQuantity(i * 2);
-            detail.setDosage("Cada " + (6 + i * 2) + " horas"); 
+            detail.setDosage("Cada " + (6 + i * 2) + " horas");
 
             mockDetails.add(detail);
         }
-    }
-
-    @Test
-    void save_Success() {
-        FormulaDetailRequestDTO request = requestList.get(0);
-        FormulaDetail mockDetail = mockDetails.get(0);
-        UUID formulaId = formulaIds.get(0);
-        UUID medicationId = medicationIds.get(0);
-
-        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(formulaId, medicationId))
-                .thenReturn(Optional.empty());
-        when(formulaDetailMapper.toEntity(request)).thenReturn(mockDetail);
-        when(formulaDetailRepository.save(any(FormulaDetail.class))).thenReturn(mockDetail);
-        when(formulaDetailMapper.toResponseDTO(any(FormulaDetail.class)))
-                .thenReturn(new FormulaDetailResponseDTO(
-                        mockDetail.getIdFormulaDetail(),
-                        formulaId,
-                        medicationId,
-                        2,
-                        "Cada 8 horas"
-                ));
-
-        FormulaDetailResponseDTO result = formulaDetailService.save(request);
-
-        assertNotNull(result);
-        verify(formulaDetailRepository, times(1)).save(any(FormulaDetail.class));
-    }
-
-    @Test
-    void save_Fails_MedicationAlreadyInFormula() {
-        FormulaDetailRequestDTO request = requestList.get(1);
-        FormulaDetail mockDetail = mockDetails.get(1);
-        UUID formulaId = formulaIds.get(1);
-        UUID medicationId = medicationIds.get(1);
-
-        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(formulaId, medicationId))
-                .thenReturn(Optional.of(mockDetail));
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            formulaDetailService.save(request);
-        }, "Debe lanzar excepción si el medicamento ya está en la fórmula.");
-
-        verify(formulaDetailRepository, never()).save(any(FormulaDetail.class));
     }
 
     @Test
@@ -149,11 +107,10 @@ class FormulaDetailServiceTest {
         FormulaDetail mockDetail = mockDetails.get(2);
         UUID detailId = mockDetail.getIdFormulaDetail();
         UUID formulaId = formulaIds.get(2);
-        UUID medicationId = medicationIds.get(2);
 
         FormulaDetailRequestDTO invalidRequest = new FormulaDetailRequestDTO(
                 formulaId,
-                UUID.randomUUID(),
+                "Otro Medicamento",
                 10,
                 "Dos veces al día"
         );
@@ -168,86 +125,64 @@ class FormulaDetailServiceTest {
     }
 
     @Test
-    void saveBulk_Success() {
-
+    void save_Success() {
         UUID formulaId = formulaIds.get(0);
-        UUID medicationId1 = medicationIds.get(0);
-        UUID medicationId2 = medicationIds.get(1);
-        UUID medicationId3 = medicationIds.get(2);
+        String medicationName1 = medicationNames.get(0);
+        String medicationName2 = medicationNames.get(1);
+        String medicationName3 = medicationNames.get(2);
 
         List<FormulaMedicationDTO> medications = Arrays.asList(
-            new FormulaMedicationDTO(medicationId1, 2, "Cada 8 horas"),
-            new FormulaMedicationDTO(medicationId2, 1, "Cada 12 horas"),
-            new FormulaMedicationDTO(medicationId3, 3, "Cada 6 horas")
+                new FormulaMedicationDTO(medicationName1, 2, "Cada 8 horas"),
+                new FormulaMedicationDTO(medicationName2, 1, "Cada 12 horas"),
+                new FormulaMedicationDTO(medicationName3, 3, "Cada 6 horas")
         );
 
         FormulaDetailsBulkRequestDTO bulkRequest = new FormulaDetailsBulkRequestDTO(formulaId, medications);
 
         Formula mockFormula = new Formula();
         mockFormula.setIdFormula(formulaId);
-        
-        Medication medication1 = new Medication("Ibuprofeno", 15000);
-        medication1.setIdMedication(medicationId1);
-        
-        Medication medication2 = new Medication("Amoxicilina", 25000);
-        medication2.setIdMedication(medicationId2);
-        
-        Medication medication3 = new Medication("Paracetamol", 8000);
-        medication3.setIdMedication(medicationId3);
+
+        Medication medication1 = new Medication(medicationName1, 15000);
+        Medication medication2 = new Medication(medicationName2, 25000);
+        Medication medication3 = new Medication(medicationName3, 8000);
 
         FormulaDetail detail1 = new FormulaDetail(mockFormula, medication1, 2, "Cada 8 horas");
         detail1.setIdFormulaDetail(UUID.randomUUID());
-        
         FormulaDetail detail2 = new FormulaDetail(mockFormula, medication2, 1, "Cada 12 horas");
         detail2.setIdFormulaDetail(UUID.randomUUID());
-        
         FormulaDetail detail3 = new FormulaDetail(mockFormula, medication3, 3, "Cada 6 horas");
         detail3.setIdFormulaDetail(UUID.randomUUID());
 
         List<FormulaDetail> savedDetails = Arrays.asList(detail1, detail2, detail3);
 
-        FormulaDetailResponseDTO response1 = new FormulaDetailResponseDTO(
-            detail1.getIdFormulaDetail(), formulaId, medicationId1, 2, "Cada 8 horas");
-        FormulaDetailResponseDTO response2 = new FormulaDetailResponseDTO(
-            detail2.getIdFormulaDetail(), formulaId, medicationId2, 1, "Cada 12 horas");
-        FormulaDetailResponseDTO response3 = new FormulaDetailResponseDTO(
-            detail3.getIdFormulaDetail(), formulaId, medicationId3, 3, "Cada 6 horas");
-
         when(formulaRepository.findById(formulaId)).thenReturn(Optional.of(mockFormula));
-        
-        when(medicationRepository.findById(medicationId1)).thenReturn(Optional.of(medication1));
-        when(medicationRepository.findById(medicationId2)).thenReturn(Optional.of(medication2));
-        when(medicationRepository.findById(medicationId3)).thenReturn(Optional.of(medication3));
-        
-        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(formulaId, medicationId1))
-            .thenReturn(Optional.empty());
-        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(formulaId, medicationId2))
-            .thenReturn(Optional.empty());
-        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(formulaId, medicationId3))
-            .thenReturn(Optional.empty());
-        
+        when(medicationRepository.findByName(medicationName1)).thenReturn(Optional.of(medication1));
+        when(medicationRepository.findByName(medicationName2)).thenReturn(Optional.of(medication2));
+        when(medicationRepository.findByName(medicationName3)).thenReturn(Optional.of(medication3));
+
+        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationName(formulaId, medicationName1))
+                .thenReturn(Optional.empty());
+        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationName(formulaId, medicationName2))
+                .thenReturn(Optional.empty());
+        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationName(formulaId, medicationName3))
+                .thenReturn(Optional.empty());
+
         when(formulaDetailRepository.saveAll(anyList())).thenReturn(savedDetails);
-        
-        when(formulaDetailMapper.toResponseDTO(detail1)).thenReturn(response1);
-        when(formulaDetailMapper.toResponseDTO(detail2)).thenReturn(response2);
-        when(formulaDetailMapper.toResponseDTO(detail3)).thenReturn(response3);
 
         List<FormulaDetailResponseDTO> result = formulaDetailService.saveBulk(bulkRequest);
 
         assertNotNull(result);
         assertEquals(3, result.size());
         verify(formulaRepository, times(1)).findById(formulaId);
-        verify(medicationRepository, times(3)).findById(any(UUID.class));
+        verify(medicationRepository, times(3)).findByName(anyString());
         verify(formulaDetailRepository, times(1)).saveAll(anyList());
-        verify(formulaDetailMapper, times(3)).toResponseDTO(any(FormulaDetail.class));
     }
 
     @Test
     void saveBulk_Fails_FormulaNotFound() {
-
         UUID nonExistentFormulaId = UUID.randomUUID();
         List<FormulaMedicationDTO> medications = Arrays.asList(
-            new FormulaMedicationDTO(medicationIds.get(0), 2, "Cada 8 horas")
+                new FormulaMedicationDTO("Ibuprofeno", 2, "Cada 8 horas")
         );
 
         FormulaDetailsBulkRequestDTO bulkRequest = new FormulaDetailsBulkRequestDTO(nonExistentFormulaId, medications);
@@ -264,102 +199,94 @@ class FormulaDetailServiceTest {
 
     @Test
     void saveBulk_Fails_MedicationNotFound() {
-
         UUID formulaId = formulaIds.get(0);
-        UUID nonExistentMedicationId = UUID.randomUUID();
+        String nonExistentMedicationName = "MedicamentoNoExiste";
 
         List<FormulaMedicationDTO> medications = Arrays.asList(
-            new FormulaMedicationDTO(nonExistentMedicationId, 2, "Cada 8 horas")
+                new FormulaMedicationDTO(nonExistentMedicationName, 2, "Cada 8 horas")
         );
 
         FormulaDetailsBulkRequestDTO bulkRequest = new FormulaDetailsBulkRequestDTO(formulaId, medications);
 
         Formula mockFormula = new Formula();
         mockFormula.setIdFormula(formulaId);
-        
+
         when(formulaRepository.findById(formulaId)).thenReturn(Optional.of(mockFormula));
-        when(medicationRepository.findById(nonExistentMedicationId)).thenReturn(Optional.empty());
+        when(medicationRepository.findByName(nonExistentMedicationName)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> {
             formulaDetailService.saveBulk(bulkRequest);
         }, "Debe lanzar excepción si algún medicamento no existe");
 
         verify(formulaRepository, times(1)).findById(formulaId);
-        verify(medicationRepository, times(1)).findById(nonExistentMedicationId);
+        verify(medicationRepository, times(1)).findByName(nonExistentMedicationName);
         verify(formulaDetailRepository, never()).saveAll(anyList());
     }
 
     @Test
     void saveBulk_Fails_MedicationAlreadyInFormula() {
-
         UUID formulaId = formulaIds.get(0);
-        UUID existingMedicationId = medicationIds.get(0);
+        String existingMedicationName = medicationNames.get(0);
 
         List<FormulaMedicationDTO> medications = Arrays.asList(
-            new FormulaMedicationDTO(existingMedicationId, 2, "Cada 8 horas")
+                new FormulaMedicationDTO(existingMedicationName, 2, "Cada 8 horas")
         );
 
         FormulaDetailsBulkRequestDTO bulkRequest = new FormulaDetailsBulkRequestDTO(formulaId, medications);
 
         Formula mockFormula = new Formula();
         mockFormula.setIdFormula(formulaId);
-        
-        Medication existingMedication = new Medication("Ibuprofeno", 15000);
-        existingMedication.setIdMedication(existingMedicationId);
-        
+
+        Medication existingMedication = new Medication(existingMedicationName, 15000);
         FormulaDetail existingDetail = new FormulaDetail();
         existingDetail.setIdFormulaDetail(UUID.randomUUID());
 
         when(formulaRepository.findById(formulaId)).thenReturn(Optional.of(mockFormula));
-        when(medicationRepository.findById(existingMedicationId)).thenReturn(Optional.of(existingMedication));
-        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationIdMedication(formulaId, existingMedicationId))
-            .thenReturn(Optional.of(existingDetail));
+        when(medicationRepository.findByName(existingMedicationName)).thenReturn(Optional.of(existingMedication));
+        when(formulaDetailRepository.findByFormulaIdFormulaAndMedicationName(formulaId, existingMedicationName))
+                .thenReturn(Optional.of(existingDetail));
 
         assertThrows(IllegalArgumentException.class, () -> {
             formulaDetailService.saveBulk(bulkRequest);
         }, "Debe lanzar excepción si algún medicamento ya está en la fórmula");
 
         verify(formulaRepository, times(1)).findById(formulaId);
-        verify(medicationRepository, times(1)).findById(existingMedicationId);
+        verify(medicationRepository, times(1)).findByName(existingMedicationName);
         verify(formulaDetailRepository, never()).saveAll(anyList());
     }
 
     @Test
     void saveBulk_Fails_DuplicateMedicationsInRequest() {
-
         UUID formulaId = formulaIds.get(0);
-        UUID duplicateMedicationId = medicationIds.get(0);
+        String duplicateMedicationName = medicationNames.get(0);
 
         List<FormulaMedicationDTO> medications = Arrays.asList(
-            new FormulaMedicationDTO(duplicateMedicationId, 2, "Cada 8 horas"),
-            new FormulaMedicationDTO(duplicateMedicationId, 3, "Cada 6 horas") // Duplicado
+                new FormulaMedicationDTO(duplicateMedicationName, 2, "Cada 8 horas"),
+                new FormulaMedicationDTO(duplicateMedicationName, 3, "Cada 6 horas")
         );
 
         FormulaDetailsBulkRequestDTO bulkRequest = new FormulaDetailsBulkRequestDTO(formulaId, medications);
 
         Formula mockFormula = new Formula();
         mockFormula.setIdFormula(formulaId);
-        
-        Medication medication = new Medication("Ibuprofeno", 15000);
-        medication.setIdMedication(duplicateMedicationId);
 
         when(formulaRepository.findById(formulaId)).thenReturn(Optional.of(mockFormula));
-        when(medicationRepository.findById(duplicateMedicationId)).thenReturn(Optional.of(medication));
+        when(medicationRepository.findByName(duplicateMedicationName))
+                .thenReturn(Optional.of(new Medication(duplicateMedicationName, 10000)));
 
         assertThrows(IllegalArgumentException.class, () -> {
             formulaDetailService.saveBulk(bulkRequest);
         }, "Debe lanzar excepción si hay medicamentos duplicados en la misma petición");
 
         verify(formulaRepository, times(1)).findById(formulaId);
-        verify(medicationRepository, times(1)).findById(duplicateMedicationId);
+        verify(medicationRepository, times(1)).findByName(duplicateMedicationName);
         verify(formulaDetailRepository, never()).saveAll(anyList());
     }
 
     @Test
-    void saveBulk_Success_EmptyList() {
-
+    void saveBulk_Fails_EmptyList() {
         UUID formulaId = formulaIds.get(0);
-        List<FormulaMedicationDTO> emptyMedications = Arrays.asList();
+        List<FormulaMedicationDTO> emptyMedications = List.of();
 
         FormulaDetailsBulkRequestDTO bulkRequest = new FormulaDetailsBulkRequestDTO(formulaId, emptyMedications);
 

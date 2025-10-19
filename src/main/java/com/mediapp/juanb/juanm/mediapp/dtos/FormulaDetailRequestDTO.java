@@ -12,7 +12,7 @@ public record FormulaDetailRequestDTO(
     UUID formulaId, 
     
     @NotNull(message = "El ID del medicamento es obligatorio")
-    UUID medicationId, 
+    String name, 
     
     @Min(value = 1, message = "La cantidad debe ser al menos 1")
     int quantity, 

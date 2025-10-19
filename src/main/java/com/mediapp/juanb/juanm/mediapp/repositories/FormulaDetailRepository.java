@@ -10,5 +10,5 @@ import com.mediapp.juanb.juanm.mediapp.entities.FormulaDetail;
 
 @Repository
 public interface FormulaDetailRepository extends JpaRepository <FormulaDetail, UUID>{
-    Optional<FormulaDetail> findByFormulaIdFormulaAndMedicationIdMedication(UUID formulaId, UUID medicationId);
+    Optional<FormulaDetail> findByFormulaIdFormulaAndMedicationName(UUID formulaId, String name);
 }

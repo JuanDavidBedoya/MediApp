@@ -5,7 +5,7 @@ import java.util.UUID;
 public record FormulaDetailResponseDTO(
     UUID idFormulaDetail,
     UUID formulaId,
-    UUID medicationId,
+    String name,
     int quantity,
     String dosage
 ) {}
