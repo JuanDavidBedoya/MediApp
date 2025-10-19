@@ -1,11 +1,9 @@
 package com.mediapp.juanb.juanm.mediapp.controllers;
 
-import com.mediapp.juanb.juanm.mediapp.dtos.DoctorRequestDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.DoctorResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.DoctorUpdateDTO;
 import com.mediapp.juanb.juanm.mediapp.services.DoctorService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,12 +27,6 @@ public class DoctorController {
     @GetMapping("/{cedula}")
     public ResponseEntity<DoctorResponseDTO> getById(@PathVariable("cedula") String cedula) {
         return ResponseEntity.ok(doctorService.findById(cedula));
-    }
-
-    @PostMapping
-    public ResponseEntity<DoctorResponseDTO> save(@Valid @RequestBody DoctorRequestDTO doctorDTO) {
-        DoctorResponseDTO newDoctor = doctorService.save(doctorDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newDoctor);
     }
 
     @PutMapping("/{cedula}")

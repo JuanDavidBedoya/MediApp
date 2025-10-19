@@ -59,9 +59,9 @@ class UserPhoneServiceTest {
 
     @BeforeEach
     void setUp() {
-        // --- Entidades ---
+
         user1 = new User();
-        user1.setCedula("12345"); // id, cedula, nombre, number
+        user1.setCedula("12345"); 
         user1.setName("Juan");
 
         phone1 = new Phone();
@@ -72,22 +72,18 @@ class UserPhoneServiceTest {
         userPhone1 = new UserPhone(user1, phone1);
         userPhone1.setIdUserPhone(userPhoneId);
 
-
-        // --- DTOs ---
         requestDTO = new UserPhoneRequestDTO(user1.getCedula(), phone1.getIdPhone());
         responseDTO = new UserPhoneResponseDTO(userPhoneId, user1.getCedula(),user1.getName(), phone1.getIdPhone().toString());
     }
 
     @Test
     void findAll_Success() {
-        // Arrange
+
         when(userPhoneRepository.findAll()).thenReturn(Collections.singletonList(userPhone1));
         when(userPhoneMapper.toResponseDTO(userPhone1)).thenReturn(responseDTO);
-
-        // Act
         List<UserPhoneResponseDTO> result = userPhoneService.findAll();
 
-        // Assert
+
         assertNotNull(result);
         assertEquals(1, result.size());
         verify(userPhoneRepository, times(1)).findAll();
@@ -96,14 +92,12 @@ class UserPhoneServiceTest {
 
     @Test
     void findById_Success() {
-        // Arrange
+
         when(userPhoneRepository.findById(userPhoneId)).thenReturn(Optional.of(userPhone1));
         when(userPhoneMapper.toResponseDTO(userPhone1)).thenReturn(responseDTO);
 
-        // Act
         UserPhoneResponseDTO result = userPhoneService.findById(userPhoneId);
 
-        // Assert
         assertNotNull(result);
         assertEquals(userPhoneId, result.idUserPhone());
         verify(userPhoneRepository, times(1)).findById(userPhoneId);
@@ -111,27 +105,24 @@ class UserPhoneServiceTest {
 
     @Test
     void findById_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         when(userPhoneRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> userPhoneService.findById(nonExistentId));
     }
 
     @Test
     void save_Success() {
-        // Arrange
+
         when(userRepository.findById(requestDTO.userCedula())).thenReturn(Optional.of(user1));
         when(phoneRepository.findById(requestDTO.phoneId())).thenReturn(Optional.of(phone1));
         when(userPhoneRepository.existsByUserAndPhone(user1, phone1)).thenReturn(false);
         when(userPhoneRepository.save(any(UserPhone.class))).thenReturn(userPhone1);
         when(userPhoneMapper.toResponseDTO(userPhone1)).thenReturn(responseDTO);
 
-        // Act
         UserPhoneResponseDTO result = userPhoneService.save(requestDTO);
 
-        // Assert
         assertNotNull(result);
         assertEquals(responseDTO, result);
         verify(userPhoneRepository, times(1)).save(any(UserPhone.class));
@@ -139,65 +130,58 @@ class UserPhoneServiceTest {
 
     @Test
     void save_Fails_UserNotFound() {
-        // Arrange
-        when(userRepository.findById(requestDTO.userCedula())).thenReturn(Optional.empty());
 
-        // Act & Assert
+        when(userRepository.findById(requestDTO.userCedula())).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> userPhoneService.save(requestDTO));
         verify(userPhoneRepository, never()).save(any(UserPhone.class));
     }
 
     @Test
     void save_Fails_PhoneNotFound() {
-        // Arrange
+
         when(userRepository.findById(requestDTO.userCedula())).thenReturn(Optional.of(user1));
         when(phoneRepository.findById(requestDTO.phoneId())).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> userPhoneService.save(requestDTO));
         verify(userPhoneRepository, never()).save(any(UserPhone.class));
     }
 
     @Test
     void save_Fails_RelationAlreadyExists() {
-        // Arrange
+
         when(userRepository.findById(requestDTO.userCedula())).thenReturn(Optional.of(user1));
         when(phoneRepository.findById(requestDTO.phoneId())).thenReturn(Optional.of(phone1));
         when(userPhoneRepository.existsByUserAndPhone(user1, phone1)).thenReturn(true);
 
-        // Act & Assert
         assertThrows(ResourceAlreadyExistsException.class, () -> userPhoneService.save(requestDTO));
         verify(userPhoneRepository, never()).save(any(UserPhone.class));
     }
 
     @Test
     void delete_Success() {
-        // Arrange
+
         when(userPhoneRepository.existsById(userPhoneId)).thenReturn(true);
         doNothing().when(userPhoneRepository).deleteById(userPhoneId);
 
-        // Act
         userPhoneService.delete(userPhoneId);
 
-        // Assert
         verify(userPhoneRepository, times(1)).existsById(userPhoneId);
         verify(userPhoneRepository, times(1)).deleteById(userPhoneId);
     }
 
     @Test
     void delete_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         when(userPhoneRepository.existsById(nonExistentId)).thenReturn(false);
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> userPhoneService.delete(nonExistentId));
         verify(userPhoneRepository, never()).deleteById(any(UUID.class));
     }
 
     @Test
     void update_Success() {
-        // Arrange
+
         User newUser = new User();
         newUser.setCedula("54321");
         Phone newPhone = new Phone();
@@ -211,28 +195,25 @@ class UserPhoneServiceTest {
         when(userPhoneRepository.save(any(UserPhone.class))).thenReturn(userPhone1); // Re-using for simplicity
         when(userPhoneMapper.toResponseDTO(userPhone1)).thenReturn(responseDTO);
 
-        // Act
         UserPhoneResponseDTO result = userPhoneService.update(userPhoneId, updateRequest);
 
-        // Assert
         assertNotNull(result);
         verify(userPhoneRepository, times(1)).save(any(UserPhone.class));
     }
 
     @Test
     void update_Fails_RelationNotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         when(userPhoneRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> userPhoneService.update(nonExistentId, requestDTO));
         verify(userPhoneRepository, never()).save(any(UserPhone.class));
     }
 
     @Test
     void update_Fails_ConflictWithExistingRelation() {
-        // Arrange
+
         User user2 = new User(); user2.setCedula("98765");
         Phone phone2 = new Phone(); phone2.setIdPhone(UUID.randomUUID());
         UserPhone conflictingRelation = new UserPhone(user2, phone2);

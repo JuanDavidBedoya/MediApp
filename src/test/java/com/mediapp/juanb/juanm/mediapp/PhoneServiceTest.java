@@ -72,16 +72,14 @@ class PhoneServiceTest {
 
     @Test
     void findAll_ReturnsAllPhones() {
-        // Arrange
+
         when(phoneRepository.findAll()).thenReturn(mockPhones);
         when(phoneMapper.toResponseDTO(mockPhones.get(0))).thenReturn(phoneResponses.get(0));
         when(phoneMapper.toResponseDTO(mockPhones.get(1))).thenReturn(phoneResponses.get(1));
         when(phoneMapper.toResponseDTO(mockPhones.get(2))).thenReturn(phoneResponses.get(2));
 
-        // Act
         List<PhoneResponseDTO> result = phoneService.findAll();
 
-        // Assert
         assertNotNull(result);
         assertEquals(3, result.size());
         verify(phoneRepository, times(1)).findAll();
@@ -90,7 +88,7 @@ class PhoneServiceTest {
 
     @Test
     void findById_Success() {
-        // Arrange
+
         Phone phone = mockPhones.get(0);
         PhoneResponseDTO response = phoneResponses.get(0);
         UUID id = phone.getIdPhone();
@@ -98,10 +96,8 @@ class PhoneServiceTest {
         when(phoneRepository.findById(id)).thenReturn(Optional.of(phone));
         when(phoneMapper.toResponseDTO(phone)).thenReturn(response);
 
-        // Act
         PhoneResponseDTO result = phoneService.findById(id);
 
-        // Assert
         assertNotNull(result);
         assertEquals(id, result.idPhone());
         assertEquals("3001234561", result.phone());
@@ -110,18 +106,17 @@ class PhoneServiceTest {
 
     @Test
     void findById_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         when(phoneRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> phoneService.findById(nonExistentId));
         verify(phoneMapper, never()).toResponseDTO(any(Phone.class));
     }
 
     @Test
     void save_Success() {
-        // Arrange
+
         PhoneRequestDTO request = phoneRequests.get(0);
         Phone phoneToSave = mockPhones.get(0);
         PhoneResponseDTO response = phoneResponses.get(0);
@@ -131,10 +126,8 @@ class PhoneServiceTest {
         when(phoneRepository.save(phoneToSave)).thenReturn(phoneToSave);
         when(phoneMapper.toResponseDTO(phoneToSave)).thenReturn(response);
 
-        // Act
         PhoneResponseDTO result = phoneService.save(request);
 
-        // Assert
         assertNotNull(result);
         assertEquals(response.idPhone(), result.idPhone());
         verify(phoneRepository, times(1)).save(phoneToSave);
@@ -142,44 +135,40 @@ class PhoneServiceTest {
 
     @Test
     void save_Fails_PhoneAlreadyExists() {
-        // Arrange
+
         PhoneRequestDTO request = phoneRequests.get(0);
         when(phoneRepository.findByPhone(request.phone())).thenReturn(Optional.of(mockPhones.get(0)));
 
-        // Act & Assert
         assertThrows(ResourceAlreadyExistsException.class, () -> phoneService.save(request));
         verify(phoneRepository, never()).save(any(Phone.class));
     }
 
     @Test
     void delete_Success() {
-        // Arrange
+
         UUID idToDelete = mockPhones.get(0).getIdPhone();
         when(phoneRepository.existsById(idToDelete)).thenReturn(true);
         doNothing().when(phoneRepository).deleteById(idToDelete);
 
-        // Act
         phoneService.delete(idToDelete);
 
-        // Assert
         verify(phoneRepository, times(1)).existsById(idToDelete);
         verify(phoneRepository, times(1)).deleteById(idToDelete);
     }
 
     @Test
     void delete_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         when(phoneRepository.existsById(nonExistentId)).thenReturn(false);
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> phoneService.delete(nonExistentId));
         verify(phoneRepository, never()).deleteById(any(UUID.class));
     }
 
     @Test
     void update_Success() {
-        // Arrange
+
         Phone existingPhone = mockPhones.get(0);
         UUID idToUpdate = existingPhone.getIdPhone();
         PhoneRequestDTO updateRequest = new PhoneRequestDTO("3109876543");
@@ -193,10 +182,8 @@ class PhoneServiceTest {
         when(phoneRepository.save(any(Phone.class))).thenReturn(updatedPhone);
         when(phoneMapper.toResponseDTO(updatedPhone)).thenReturn(response);
 
-        // Act
         PhoneResponseDTO result = phoneService.update(idToUpdate, updateRequest);
 
-        // Assert
         assertNotNull(result);
         assertEquals("3109876543", result.phone());
         verify(phoneRepository, times(1)).findById(idToUpdate);
@@ -205,24 +192,22 @@ class PhoneServiceTest {
 
     @Test
     void update_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         PhoneRequestDTO updateRequest = new PhoneRequestDTO("Test");
         when(phoneRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> phoneService.update(nonExistentId, updateRequest));
         verify(phoneRepository, never()).save(any(Phone.class));
     }
 
     @Test
     void update_Fails_PhoneConflict() {
-        // Arrange
-        Phone phoneToUpdate = mockPhones.get(0); // "3001234561" con id_1
-        Phone conflictingPhone = mockPhones.get(1); // "3001234562" con id_2
+
+        Phone phoneToUpdate = mockPhones.get(0); 
+        Phone conflictingPhone = mockPhones.get(1); 
         UUID idToUpdate = phoneToUpdate.getIdPhone();
-        
-        // Intentar actualizar el teléfono 1 para que tenga el número del teléfono 2
+     
         PhoneRequestDTO updateRequest = new PhoneRequestDTO(conflictingPhone.getPhone());
 
         when(phoneRepository.findById(idToUpdate)).thenReturn(Optional.of(phoneToUpdate));

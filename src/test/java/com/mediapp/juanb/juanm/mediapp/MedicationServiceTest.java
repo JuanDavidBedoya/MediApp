@@ -49,7 +49,6 @@ class MedicationServiceTest {
         requestList = new ArrayList<>();
         medicationIds = new ArrayList<>();
 
-        // Crear dataset con 5 medicamentos
         for (int i = 1; i <= 5; i++) {
             UUID id = UUID.randomUUID();
             medicationIds.add(id);

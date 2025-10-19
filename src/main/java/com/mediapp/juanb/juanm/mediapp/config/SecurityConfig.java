@@ -48,42 +48,39 @@ public class SecurityConfig {
     }
 
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(withDefaults())
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            // 1. Para cualquier persona
-            .requestMatchers("/auth/**").permitAll()
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                // 1. Endpoints Públicos (Registro y Login para todos)
+                .requestMatchers("/auth/register").permitAll()
+                .requestMatchers("/auth/login").permitAll()
 
-            // 2. Para doctores
-            .requestMatchers("/formulas/**").hasRole("DOCTOR")
-            .requestMatchers("/formula-details/**").hasRole("DOCTOR")
-            .requestMatchers(HttpMethod.POST, "/medicamentos", "/especialidades", "/cities", "/eps", "/phones").hasRole("DOCTOR")
-            .requestMatchers(HttpMethod.PUT, "/medicamentos/**", "/especialidades/**", "/cities/**", "/eps/**", "/phones/**").hasRole("DOCTOR")
-            .requestMatchers(HttpMethod.DELETE, "/medicamentos/**", "/especialidades/**", "/cities/**", "/eps/**", "/phones/**").hasRole("DOCTOR")
-            .requestMatchers(HttpMethod.PUT, "/doctors/**", "/users/**").hasRole("DOCTOR")
-            .requestMatchers(HttpMethod.DELETE, "/doctors/**", "/users/**").hasRole("DOCTOR")
-            .requestMatchers(HttpMethod.GET, "/users", "/appointments").hasRole("DOCTOR")
+                // 2. Endpoints para ROL "USER"
+                .requestMatchers(HttpMethod.POST, "/appointments").hasAnyRole("USER","DOCTOR")
 
-            // 3. Para usuarios
-            .requestMatchers(HttpMethod.POST, "/appointments").hasRole("USER")
+                // 3. Endpoints para ROL "DOCTOR"
+                .requestMatchers("/auth/register/doctor").hasRole("DOCTOR")
+                .requestMatchers("/appointments/**").hasRole("DOCTOR")
+                .requestMatchers("/users/**", "/doctors/**").hasRole("DOCTOR")
+                .requestMatchers("/formulas/**", "/formula-details/**").hasRole("DOCTOR")
+                .requestMatchers(
+                    "/medications/**", 
+                    "/especialidades/**", 
+                    "/cities/**", 
+                    "/eps/**", 
+                    "/phones/**", 
+                    "/user-phones/**"
+                ).hasRole("DOCTOR")
+                
+                // 4. Cualquier otra petición no definida requiere autenticación.
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-            //. 4 Para doctores y usuarios
-            .requestMatchers(HttpMethod.GET, "/doctors/**", "/medicamentos/**", "/especialidades/**", "/cities/**", "/eps/**", "/phones/**").hasAnyRole("DOCTOR", "USER")
-            .requestMatchers(HttpMethod.GET, "/appointments/**", "/users/**").hasAnyRole("DOCTOR", "USER")
-            .requestMatchers(HttpMethod.PUT, "/appointments/**").hasAnyRole("DOCTOR", "USER")
-            .requestMatchers(HttpMethod.DELETE, "/appointments/**").hasAnyRole("DOCTOR", "USER")
-            .requestMatchers("/user-phones/**").hasAnyRole("DOCTOR", "USER")
-            
-
-            // 5. Cualquier otra
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authenticationProvider(authenticationProvider())
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
-}
+        return http.build();
+    }
 }

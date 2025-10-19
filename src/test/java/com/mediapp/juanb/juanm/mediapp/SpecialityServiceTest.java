@@ -72,16 +72,14 @@ class SpecialityServiceTest {
 
     @Test
     void findAll_ReturnsAllSpecialities() {
-        // Arrange
+
         when(specialityRepository.findAll()).thenReturn(mockSpecialities);
         when(specialityMapper.toResponseDTO(mockSpecialities.get(0))).thenReturn(specialityResponses.get(0));
         when(specialityMapper.toResponseDTO(mockSpecialities.get(1))).thenReturn(specialityResponses.get(1));
         when(specialityMapper.toResponseDTO(mockSpecialities.get(2))).thenReturn(specialityResponses.get(2));
 
-        // Act
         List<SpecialityResponseDTO> result = specialityService.findAll();
 
-        // Assert
         assertNotNull(result);
         assertEquals(3, result.size());
         verify(specialityRepository, times(1)).findAll();
@@ -90,7 +88,7 @@ class SpecialityServiceTest {
 
     @Test
     void findById_Success() {
-        // Arrange
+
         Speciality speciality = mockSpecialities.get(0);
         SpecialityResponseDTO response = specialityResponses.get(0);
         UUID id = speciality.getIdSpeciality();
@@ -98,10 +96,8 @@ class SpecialityServiceTest {
         when(specialityRepository.findById(id)).thenReturn(Optional.of(speciality));
         when(specialityMapper.toResponseDTO(speciality)).thenReturn(response);
 
-        // Act
         SpecialityResponseDTO result = specialityService.findById(id);
 
-        // Assert
         assertNotNull(result);
         assertEquals(id, result.idSpeciality());
         assertEquals("Cardiología", result.name());
@@ -110,18 +106,17 @@ class SpecialityServiceTest {
 
     @Test
     void findById_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         when(specialityRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> specialityService.findById(nonExistentId));
         verify(specialityMapper, never()).toResponseDTO(any(Speciality.class));
     }
 
     @Test
     void save_Success() {
-        // Arrange
+
         SpecialityRequestDTO request = specialityRequests.get(0);
         Speciality specialityToSave = mockSpecialities.get(0);
         SpecialityResponseDTO response = specialityResponses.get(0);
@@ -131,10 +126,8 @@ class SpecialityServiceTest {
         when(specialityRepository.save(specialityToSave)).thenReturn(specialityToSave);
         when(specialityMapper.toResponseDTO(specialityToSave)).thenReturn(response);
 
-        // Act
         SpecialityResponseDTO result = specialityService.save(request);
 
-        // Assert
         assertNotNull(result);
         assertEquals(response.idSpeciality(), result.idSpeciality());
         verify(specialityRepository, times(1)).save(specialityToSave);
@@ -142,44 +135,40 @@ class SpecialityServiceTest {
 
     @Test
     void save_Fails_NameAlreadyExists() {
-        // Arrange
+
         SpecialityRequestDTO request = specialityRequests.get(0);
         when(specialityRepository.findByName(request.name())).thenReturn(Optional.of(mockSpecialities.get(0)));
 
-        // Act & Assert
         assertThrows(ResourceAlreadyExistsException.class, () -> specialityService.save(request));
         verify(specialityRepository, never()).save(any(Speciality.class));
     }
 
     @Test
     void delete_Success() {
-        // Arrange
+
         UUID idToDelete = mockSpecialities.get(0).getIdSpeciality();
         when(specialityRepository.existsById(idToDelete)).thenReturn(true);
         doNothing().when(specialityRepository).deleteById(idToDelete);
 
-        // Act
         specialityService.delete(idToDelete);
 
-        // Assert
         verify(specialityRepository, times(1)).existsById(idToDelete);
         verify(specialityRepository, times(1)).deleteById(idToDelete);
     }
 
     @Test
     void delete_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         when(specialityRepository.existsById(nonExistentId)).thenReturn(false);
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> specialityService.delete(nonExistentId));
         verify(specialityRepository, never()).deleteById(any(UUID.class));
     }
 
     @Test
     void update_Success() {
-        // Arrange
+
         Speciality existingSpeciality = mockSpecialities.get(0);
         UUID idToUpdate = existingSpeciality.getIdSpeciality();
         SpecialityRequestDTO updateRequest = new SpecialityRequestDTO("Neurocirugía");
@@ -193,10 +182,8 @@ class SpecialityServiceTest {
         when(specialityRepository.save(any(Speciality.class))).thenReturn(updatedSpeciality);
         when(specialityMapper.toResponseDTO(updatedSpeciality)).thenReturn(response);
 
-        // Act
         SpecialityResponseDTO result = specialityService.update(idToUpdate, updateRequest);
 
-        // Assert
         assertNotNull(result);
         assertEquals("Neurocirugía", result.name());
         verify(specialityRepository, times(1)).findById(idToUpdate);
@@ -205,30 +192,27 @@ class SpecialityServiceTest {
 
     @Test
     void update_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         SpecialityRequestDTO updateRequest = new SpecialityRequestDTO("Test");
         when(specialityRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> specialityService.update(nonExistentId, updateRequest));
         verify(specialityRepository, never()).save(any(Speciality.class));
     }
 
     @Test
     void update_Fails_NameConflict() {
-        // Arrange
-        Speciality specialityToUpdate = mockSpecialities.get(0); // "Cardiología" con id_1
-        Speciality conflictingSpeciality = mockSpecialities.get(1); // "Pediatría" con id_2
+
+        Speciality specialityToUpdate = mockSpecialities.get(0);
+        Speciality conflictingSpeciality = mockSpecialities.get(1); 
         UUID idToUpdate = specialityToUpdate.getIdSpeciality();
         
-        // Intentar actualizar "Cardiología" para que se llame "Pediatría"
         SpecialityRequestDTO updateRequest = new SpecialityRequestDTO(conflictingSpeciality.getName());
 
         when(specialityRepository.findById(idToUpdate)).thenReturn(Optional.of(specialityToUpdate));
         when(specialityRepository.findByName(updateRequest.name())).thenReturn(Optional.of(conflictingSpeciality));
 
-        // Act & Assert
         assertThrows(ResourceAlreadyExistsException.class, () -> specialityService.update(idToUpdate, updateRequest));
         verify(specialityRepository, never()).save(any(Speciality.class));
     }

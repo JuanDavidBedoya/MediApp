@@ -72,16 +72,14 @@ class CityServiceTest {
 
     @Test
     void findAll_ReturnsAllCities() {
-        // Arrange
+  
         when(cityRepository.findAll()).thenReturn(mockCities);
         when(cityMapper.toResponseDTO(mockCities.get(0))).thenReturn(cityResponses.get(0));
         when(cityMapper.toResponseDTO(mockCities.get(1))).thenReturn(cityResponses.get(1));
         when(cityMapper.toResponseDTO(mockCities.get(2))).thenReturn(cityResponses.get(2));
 
-        // Act
         List<CityResponseDTO> result = cityService.findAll();
 
-        // Assert
         assertNotNull(result);
         assertEquals(3, result.size());
         verify(cityRepository, times(1)).findAll();
@@ -90,18 +88,15 @@ class CityServiceTest {
 
     @Test
     void findById_Success() {
-        // Arrange
+
         City city = mockCities.get(0);
         CityResponseDTO response = cityResponses.get(0);
         UUID id = city.getIdCity();
 
         when(cityRepository.findById(id)).thenReturn(Optional.of(city));
         when(cityMapper.toResponseDTO(city)).thenReturn(response);
-
-        // Act
         CityResponseDTO result = cityService.findById(id);
 
-        // Assert
         assertNotNull(result);
         assertEquals(id, result.idCity());
         assertEquals("Ciudad 1", result.name());
@@ -110,18 +105,17 @@ class CityServiceTest {
 
     @Test
     void findById_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         when(cityRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> cityService.findById(nonExistentId));
         verify(cityMapper, never()).toResponseDTO(any(City.class));
     }
 
     @Test
     void save_Success() {
-        // Arrange
+
         CityRequestDTO request = cityRequests.get(0);
         City cityToSave = mockCities.get(0);
         CityResponseDTO response = cityResponses.get(0);
@@ -131,10 +125,8 @@ class CityServiceTest {
         when(cityRepository.save(cityToSave)).thenReturn(cityToSave);
         when(cityMapper.toResponseDTO(cityToSave)).thenReturn(response);
 
-        // Act
         CityResponseDTO result = cityService.save(request);
 
-        // Assert
         assertNotNull(result);
         assertEquals(response.idCity(), result.idCity());
         verify(cityRepository, times(1)).save(cityToSave);
@@ -142,44 +134,40 @@ class CityServiceTest {
 
     @Test
     void save_Fails_NameAlreadyExists() {
-        // Arrange
+
         CityRequestDTO request = cityRequests.get(0);
         when(cityRepository.findByName(request.name())).thenReturn(Optional.of(mockCities.get(0)));
 
-        // Act & Assert
         assertThrows(ResourceAlreadyExistsException.class, () -> cityService.save(request));
         verify(cityRepository, never()).save(any(City.class));
     }
 
     @Test
     void delete_Success() {
-        // Arrange
+        
         UUID idToDelete = mockCities.get(0).getIdCity();
         when(cityRepository.existsById(idToDelete)).thenReturn(true);
         doNothing().when(cityRepository).deleteById(idToDelete);
 
-        // Act
         cityService.delete(idToDelete);
 
-        // Assert
         verify(cityRepository, times(1)).existsById(idToDelete);
         verify(cityRepository, times(1)).deleteById(idToDelete);
     }
 
     @Test
     void delete_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         when(cityRepository.existsById(nonExistentId)).thenReturn(false);
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> cityService.delete(nonExistentId));
         verify(cityRepository, never()).deleteById(any(UUID.class));
     }
 
     @Test
     void update_Success() {
-        // Arrange
+
         City existingCity = mockCities.get(0);
         UUID idToUpdate = existingCity.getIdCity();
         CityRequestDTO updateRequest = new CityRequestDTO("Nombre Actualizado");
@@ -193,10 +181,8 @@ class CityServiceTest {
         when(cityRepository.save(any(City.class))).thenReturn(updatedCity);
         when(cityMapper.toResponseDTO(updatedCity)).thenReturn(response);
 
-        // Act
         CityResponseDTO result = cityService.update(idToUpdate, updateRequest);
 
-        // Assert
         assertNotNull(result);
         assertEquals("Nombre Actualizado", result.name());
         verify(cityRepository, times(1)).findById(idToUpdate);
@@ -205,30 +191,27 @@ class CityServiceTest {
 
     @Test
     void update_Fails_NotFound() {
-        // Arrange
+
         UUID nonExistentId = UUID.randomUUID();
         CityRequestDTO updateRequest = new CityRequestDTO("Test");
         when(cityRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> cityService.update(nonExistentId, updateRequest));
         verify(cityRepository, never()).save(any(City.class));
     }
 
     @Test
     void update_Fails_NameConflict() {
-        // Arrange
-        City cityToUpdate = mockCities.get(0); // "Ciudad 1" con id_1
-        City conflictingCity = mockCities.get(1); // "Ciudad 2" con id_2
+
+        City cityToUpdate = mockCities.get(0); 
+        City conflictingCity = mockCities.get(1); 
         UUID idToUpdate = cityToUpdate.getIdCity();
 
-        // Intentar actualizar "Ciudad 1" para que se llame "Ciudad 2"
         CityRequestDTO updateRequest = new CityRequestDTO(conflictingCity.getName());
 
         when(cityRepository.findById(idToUpdate)).thenReturn(Optional.of(cityToUpdate));
         when(cityRepository.findByName(updateRequest.name())).thenReturn(Optional.of(conflictingCity));
 
-        // Act & Assert
         assertThrows(ResourceAlreadyExistsException.class, () -> cityService.update(idToUpdate, updateRequest));
         verify(cityRepository, never()).save(any(City.class));
     }
