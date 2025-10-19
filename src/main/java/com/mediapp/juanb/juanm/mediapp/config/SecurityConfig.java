@@ -56,19 +56,18 @@ public class SecurityConfig {
                 // 1. Endpoints Públicos (Registro y Login para todos)
                 .requestMatchers("/auth/register").permitAll()
                 .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/auth/register/doctor").permitAll()
-                .requestMatchers("/especialidades/**").permitAll()
 
                 // 2. Endpoints para ROL "USER"
                 .requestMatchers(HttpMethod.POST, "/appointments").hasAnyRole("USER","DOCTOR")
 
                 // 3. Endpoints para ROL "DOCTOR"
-                
+                .requestMatchers("/auth/register/doctor").hasRole("DOCTOR")
                 .requestMatchers("/appointments/**").hasRole("DOCTOR")
                 .requestMatchers("/users/**", "/doctors/**").hasRole("DOCTOR")
                 .requestMatchers("/formulas/**", "/formula-details/**").hasRole("DOCTOR")
                 .requestMatchers(
                     "/medications/**",  
+                    "/especialidades/**",
                     "/cities/**", 
                     "/eps/**", 
                     "/phones/**", 
