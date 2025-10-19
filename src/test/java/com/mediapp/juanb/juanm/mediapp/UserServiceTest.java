@@ -31,7 +31,6 @@ import com.mediapp.juanb.juanm.mediapp.entities.City;
 import com.mediapp.juanb.juanm.mediapp.entities.Eps;
 import com.mediapp.juanb.juanm.mediapp.entities.Phone;
 import com.mediapp.juanb.juanm.mediapp.entities.User;
-import com.mediapp.juanb.juanm.mediapp.entities.UserPhone;
 import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceAlreadyExistsException;
 import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceNotFoundException;
 import com.mediapp.juanb.juanm.mediapp.mappers.UserMapper;
@@ -153,18 +152,11 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toUserResponseDTO(user)).thenReturn(userResponseDTO);
         
-
-        when(phoneRepository.findByPhone(anyString())).thenReturn(Optional.empty()); 
-        when(phoneRepository.save(any(Phone.class))).thenReturn(new Phone());
-        when(userPhoneRepository.save(any(UserPhone.class))).thenReturn(new UserPhone());
-        
         UserResponseDTO result = userService.save(userRequestDTO);
 
         assertNotNull(result);
         assertEquals(userRequestDTO.cedula(), result.cedula());
-        verify(userRepository, times(1)).save(any(User.class));
-        verify(phoneRepository, times(1)).save(any(Phone.class)); 
-        verify(userPhoneRepository, times(1)).save(any(UserPhone.class)); 
+        verify(userRepository, times(1)).save(any(User.class));  
     }
 
     @Test

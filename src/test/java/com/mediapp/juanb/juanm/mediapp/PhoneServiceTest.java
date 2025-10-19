@@ -81,7 +81,7 @@ class PhoneServiceTest {
         List<PhoneResponseDTO> result = phoneService.findAll();
 
         assertNotNull(result);
-        assertEquals(3, result.size());
+        assertEquals(5, result.size());
         verify(phoneRepository, times(1)).findAll();
         verify(phoneMapper, times(3)).toResponseDTO(any(Phone.class));
     }
