@@ -1,0 +1,67 @@
+<div class="absolute top-0 left-0 h-full w-full overflow-hidden bg-blue-900 bg-linear-to-b from-blue-700 via-blue-400 to-blue-300"></div>
+
+<div class="relative flex min-h-screen items-center justify-center rounded-3xl bg-transparent shadow-xl">
+  
+  <div class="z-10 hidden flex-col self-center text-gray-300 sm:max-w-4xl lg:flex lg:px-14 xl:max-w-md">
+    <div class="self-start">
+      <h1 class="my-3 text-4xl font-semibold text-white">Bienvenido de nuevo</h1>
+      <p class="pr-3 text-sm opacity-75 text-white">
+        Inicia sesión para gestionar tus citas médicas
+      </p>
+    </div>
+  </div>
+
+  <div class="z-10 flex justify-center self-center">
+    <div class="mx-auto w-96 rounded-3xl bg-white p-12 border-2 border-blue-500">
+      <div class="mb-7">
+        <h3 class="text-2xl font-semibold text-blue-950">Iniciar Sesión</h3>
+        <p class="text-blue-950">
+          ¿No tienes una cuenta?
+          <a routerLink="/registro" class="text-sm text-blue-950 hover:text-blue-600 transition-colors duration-200 ease-in-out cursor-pointer">Regístrate</a>
+        </p>
+      </div>
+      
+      <form class="space-y-4">
+        <div>
+          <input 
+            type="text" 
+            placeholder="Cédula" 
+            name="cedula"
+            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 focus:border-blue-800 focus:bg-blue-200 focus:outline-none focus:scale-[1.03] transition-transform duration-300 ease-out" />
+        </div>
+
+        <div>
+          <input 
+            type="password" 
+            placeholder="Contraseña" 
+            name="contrasena"
+            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 focus:border-blue-800 focus:bg-blue-200 focus:outline-none focus:scale-[1.03] transition-transform duration-300 ease-out" />
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div class="ml-auto text-sm">
+             <a routerLink="/forgot-password" class="text-blue-950 hover:text-blue-600 transition-colors duration-200 ease-in-out cursor-pointer">¿Olvidaste tu contraseña?</a>
+          </div>
+        </div>
+
+        <div>
+          <button 
+            type="submit"
+            class="w-full cursor-pointer justify-center rounded-lg p-3 font-semibold tracking-wide text-white
+                   bg-linear-to-br from-blue-800 via-blue-700 to-blue-800
+                   transition-all duration-300 ease-in-out
+                   hover:scale-105 hover:contrast-125
+                   disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100 disabled:contrast-100">
+            Iniciar Sesión
+          </button>
+        </div>
+      </form>
+
+      <div class="my-5 flex items-center justify-center space-x-2">
+        <span class="h-px w-16 bg-blue-300"></span>
+        <span class="font-normal text-blue-400">o</span>
+        <span class="h-px w-16 bg-blue-300"></span>
+      </div>
+    </div>
+  </div>
+</div>
