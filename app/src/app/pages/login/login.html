@@ -7,7 +7,6 @@
   <div class="z-10 hidden flex-col self-center sm:max-w-4xl lg:flex lg:px-14 xl:max-w-3xl w-full">
 
     <swiper-container class="w-full h-[450px] rounded-3xl overflow-hidden shadow-xl border-2 border-blue-500"
-    
       loop="true" autoplay-delay="3000" autoplay-disable-on-interaction="false" effect="fade">
       <swiper-slide>
         <img src="/img/Negocio1.jpg" alt="Imagen del negocio 1" class="w-full h-full object-cover">
@@ -35,32 +34,65 @@
         </p>
       </div>
 
-      <form class="space-y-4">
+      @if (errorMessage) {
+      <div class="mb-4 rounded-lg border border-red-300 bg-red-50 p-3 text-center text-sm text-red-700">
+        {{ errorMessage }}
+      </div>
+      }
+
+      <form class="space-y-4" (ngSubmit)="login()" #loginForm="ngForm">
+
         <div>
-          <input type="text" placeholder="Cédula" name="cedula"
-            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 focus:border-blue-800 focus:bg-blue-200 focus:outline-none focus:scale-[1.03] transition-transform duration-300 ease-out" />
+          <input type="text" placeholder="Cédula" name="cedula" [(ngModel)]="formData.cedula" #cedulaInput="ngModel"
+            required
+            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 focus:border-blue-800 focus:bg-blue-200 focus:outline-none focus:scale-[1.03] transition-transform duration-300 ease-out"
+            [class.border-red-500]="cedulaInput.invalid && (cedulaInput.dirty || cedulaInput.touched)" />
+
+          @if (cedulaInput.invalid && (cedulaInput.dirty || cedulaInput.touched)) {
+          <div class="mt-1 text-xs text-red-600">
+            @if (cedulaInput.errors?.['required']) {
+            <span>La cédula es obligatoria.</span>
+            }
+          </div>
+          }
         </div>
 
         <div>
-          <input type="password" placeholder="Contraseña" name="contrasena"
-            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 focus:border-blue-800 focus:bg-blue-200 focus:outline-none focus:scale-[1.03] transition-transform duration-300 ease-out" />
+          <input type="password" placeholder="Contraseña" name="password" [(ngModel)]="formData.password"
+            #contrasenaInput="ngModel" required
+            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 focus:border-blue-800 focus:bg-blue-200 focus:outline-none focus:scale-[1.03] transition-transform duration-300 ease-out"
+            [class.border-red-500]="contrasenaInput.invalid && (contrasenaInput.dirty || contrasenaInput.touched)" />
+
+          @if (contrasenaInput.invalid && (contrasenaInput.dirty || contrasenaInput.touched)) {
+          <div class="mt-1 text-xs text-red-600">
+            @if (contrasenaInput.errors?.['required']) {
+            <span>La contraseña es obligatoria.</span>
+            }
+          </div>
+          }
         </div>
 
         <div class="flex items-center justify-between">
           <div class="ml-auto text-sm">
             <a routerLink="/forgot-password"
-              class="text-blue-950 hover:text-blue-600 transition-colors duration-200 ease-in-out cursor-pointer">¿Olvidaste
-              tu contraseña?</a>
+              class="text-blue-950 hover:text-blue-600 transition-colors duration-200 ease-in-out cursor-pointer">
+              ¿Olvidaste tu contraseña?
+            </a>
           </div>
         </div>
 
         <div>
-          <button type="submit" class="w-full cursor-pointer justify-center rounded-lg p-3 font-semibold tracking-wide text-white
-                   bg-linear-to-br from-blue-800 via-blue-700 to-blue-800
-                   transition-all duration-300 ease-in-out
-                   hover:scale-105 hover:contrast-125
-                   disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100 disabled:contrast-100">
-            Iniciar Sesión
+          <button type="submit" [disabled]="!loginForm.form.valid || isLoading" class="w-full cursor-pointer justify-center rounded-lg p-3 font-semibold tracking-wide text-white
+                     bg-linear-to-br from-blue-800 via-blue-700 to-blue-800
+                     transition-all duration-300 ease-in-out
+                     hover:scale-105 hover:contrast-125
+                     disabled:cursor-not-allowed disabled:scale-100 disabled:bg-gray-400 disabled:contrast-100">
+
+            @if (!isLoading) {
+            <span>Iniciar Sesión</span>
+            } @else {
+            <span>Verificando...</span>
+            }
           </button>
         </div>
       </form>

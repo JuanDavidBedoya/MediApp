@@ -7,5 +7,5 @@ public record LoginRequestDTO(
     String cedula,
 
     @NotBlank(message = "La contraseña no puede estar vacía")
-    String contrasena
+    String password
 ) {}

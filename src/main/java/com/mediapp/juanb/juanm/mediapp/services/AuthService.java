@@ -67,7 +67,7 @@ public class AuthService {
     public AuthResponseDTO login(LoginRequestDTO request) {
 
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.cedula(), request.contrasena())
+                new UsernamePasswordAuthenticationToken(request.cedula(), request.password())
         );
 
         var userOptional = userRepository.findByCedula(request.cedula());
