@@ -20,7 +20,7 @@ public record UserRequestDTO(
 
     @NotBlank(message = "La contraseña no puede estar vacía")
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
-    String contrasena,
+    String password,
 
     @NotBlank(message = "El nombre de la EPS es obligatorio")
     String epsName, 

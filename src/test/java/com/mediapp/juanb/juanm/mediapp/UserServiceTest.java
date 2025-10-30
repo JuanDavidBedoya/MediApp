@@ -148,7 +148,7 @@ class UserServiceTest {
         when(userRepository.findByEmail(userRequestDTO.email())).thenReturn(Optional.empty());
         when(epsRepository.findByName(userRequestDTO.epsName())).thenReturn(Optional.of(eps));
         when(cityRepository.findByName(userRequestDTO.cityName())).thenReturn(Optional.of(city));
-        when(passwordEncoder.encode(userRequestDTO.contrasena())).thenReturn("hashedPassword");
+        when(passwordEncoder.encode(userRequestDTO.password())).thenReturn("hashedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toUserResponseDTO(user)).thenReturn(userResponseDTO);
         

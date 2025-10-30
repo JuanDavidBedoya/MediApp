@@ -81,7 +81,7 @@ export class Login {
         } else if (err.status === 0) {
           this.errorMessage = 'No se pudo conectar con el servidor. Revisa tu conexión.';
         } else {
-          this.errorMessage = 'Ocurrió un error inesperado. Inténtalo de nuevo.';
+          this.errorMessage = 'La cédula o la contraseña son incorrectas.';
         }
       }
     });

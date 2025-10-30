@@ -76,6 +76,7 @@ public class SecurityConfig {
                 
                 // 4. Cualquier otra petición no definida requiere autenticación.
                 .anyRequest().authenticated()
+            
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())

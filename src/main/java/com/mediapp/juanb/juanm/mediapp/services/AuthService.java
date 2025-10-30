@@ -143,7 +143,7 @@ public class AuthService {
         newUser.setCedula(request.cedula());
         newUser.setName(request.name());
         newUser.setEmail(request.email());
-        newUser.setPassword(passwordEncoder.encode(request.contrasena()));
+        newUser.setPassword(passwordEncoder.encode(request.password()));
         newUser.setEps(eps);
         newUser.setCity(city);
 

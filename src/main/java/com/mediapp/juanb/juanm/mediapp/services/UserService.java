@@ -93,7 +93,7 @@ public class UserService implements UserDetailsService {
         newUser.setCedula(userDTO.cedula());
         newUser.setName(userDTO.name());
         newUser.setEmail(userDTO.email());
-        newUser.setPassword(passwordEncoder.encode(userDTO.contrasena()));
+        newUser.setPassword(passwordEncoder.encode(userDTO.password()));
         newUser.setEps(eps);
         newUser.setCity(city);
 
