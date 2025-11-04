@@ -12,16 +12,16 @@ export interface UserRequestDTO {
   name: string;
   email: string;
   password: string;
-  epsName: number;
+  epsName: string;
   phones: string[];
-  cityName: number;
+  cityName: string;
 }
 
 export interface UserUpdateDTO {
   name: string;
   email: string;
   password: string;
-  epsName: number;
-  cityName: number;
+  epsName: string;
+  cityName: string;
   phones: string[];
 }

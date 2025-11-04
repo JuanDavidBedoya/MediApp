@@ -1,9 +1,11 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, resource } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router'; // Importar Router
 import { FormsModule } from '@angular/forms';
 import { register } from 'swiper/element/bundle';
 import { environment } from '../../../environment';
+import { UsuarioService } from '../../services/usuario-service';
+import { UserRequestDTO } from '../../interfaces/userDTO';
 
 register();
 
@@ -21,6 +23,31 @@ export class Register {
 
   telefonos: string[] = [''];
 
+  formData = {
+    cedula: '',
+    name: '',
+    email: '',
+    password: '',
+    epsName: '', 
+    cityName: '', 
+  };
+
+  isSubmitting = false;
+  submissionMessage: { type: 'success' | 'error', text: string } | null = null;
+
+  cities = resource({
+    loader: () => fetch(`${environment.apiUrl}/cities`).then(result => result.json())
+  });
+
+  epsList = resource({
+    loader: () => fetch(`${environment.apiUrl}/eps`).then(result => result.json())
+  });
+
+  constructor(
+    private usuarioService: UsuarioService,
+    private router: Router
+  ) {}
+
   agregarTelefono(): void {
     this.telefonos.push('');
   }
@@ -35,12 +62,41 @@ export class Register {
     return index;
   }
 
-  cities = resource({
-    loader: () => fetch(`${environment.apiUrl}/cities`).then(result => result.json())
-  });
+  registrarUsuario(): void {
+    if (this.isSubmitting) return; // Prevenir doble envío
+    this.isSubmitting = true;
+    this.submissionMessage = null;
 
-  epsList = resource({
-    loader: () => fetch(`${environment.apiUrl}/eps`).then(result => result.json())
-  });
+    const validTelefonos = this.telefonos.filter(tel => tel && tel.trim() !== '');
 
+    const nuevoUsuario: UserRequestDTO = {
+      cedula: this.formData.cedula,
+      name: this.formData.name,
+      email: this.formData.email,
+      password: this.formData.password,
+      epsName: this.formData.epsName!,   
+      cityName: this.formData.cityName!, 
+      phones: validTelefonos
+    };
+
+    this.usuarioService.registrarUsuario(nuevoUsuario).subscribe({
+      next: (response) => {
+        console.log('Usuario registrado con éxito:', response);
+        this.isSubmitting = false;
+
+        this.submissionMessage = { type: 'success', text: '¡Registro exitoso! Redirigiendo al login...' };
+
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
+      },
+      error: (err) => {
+        console.error('Error al registrar el usuario:', err);
+        this.isSubmitting = false;
+
+        const errorMsg = err.error?.message || 'Hubo un error en el registro. Por favor, verifica tus datos.';
+        this.submissionMessage = { type: 'error', text: errorMsg };
+      }
+    });
+  }
 }

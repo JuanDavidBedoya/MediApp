@@ -23,8 +23,8 @@ export class Profile implements OnInit {
     name: '',
     email: '',
     password: '', // Empezar vacío
-    epsName: 0,   // ID de la EPS
-    cityName: 0,  // ID de la Ciudad
+    epsName: '',   // ID de la EPS
+    cityName: '',  // ID de la Ciudad
     phones: ['']  // Empezar con un teléfono
   };
 
@@ -104,8 +104,8 @@ export class Profile implements OnInit {
         phones: data.phones.length > 0 ? data.phones : [''],
         // Asignamos los IDs basándonos en los nombres (simulación)
         // En un caso real, la API de perfil ya debería devolver los IDs
-        epsName: 1,   // Asumimos que 'Sura' es el ID 1
-        cityName: 1 // Asumimos que 'Armenia' es el ID 1
+        epsName: '',   // Asumimos que 'Sura' es el ID 1
+        cityName: '' // Asumimos que 'Armenia' es el ID 1
       };
     });
   }
