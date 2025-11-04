@@ -57,10 +57,10 @@
                  focus:border-blue-800 focus:bg-blue-200 focus:outline-none 
                  focus:scale-[1.03] transition-transform duration-300 ease-out">
             <option value="" disabled selected>
-              @if (cargandoEps) { Cargando EPS... } @else { Selecciona tu EPS }
+              @if (epsList.isLoading()) { Cargando EPS... } @else { Selecciona tu EPS }
             </option>
-            @for (eps of epsList; track eps.id) {
-            <option [value]="eps.id">{{ eps.nombre }}</option>
+            @for (eps of epsList.value(); track eps.idEps) {
+            <option [value]="eps.idEps">{{ eps.name }}</option>
             }
           </select>
         </div>
@@ -70,10 +70,10 @@
                  focus:border-blue-800 focus:bg-blue-200 focus:outline-none 
                  focus:scale-[1.03] transition-transform duration-300 ease-out">
             <option value="" disabled selected>
-              @if (cargandoCiudades) { Cargando Ciudades... } @else { Selecciona tu Ciudad }
+              @if (cities.isLoading()) { Cargando Ciudades... } @else { Selecciona tu Ciudad }
             </option>
-            @for (ciudad of ciudades; track ciudad.id) {
-            <option [value]="ciudad.id">{{ ciudad.nombre }}</option>
+            @for (city of cities.value(); track city.idCity) {
+            <option [value]="city.idCity">{{ city.name }}</option>
             }
           </select>
         </div>

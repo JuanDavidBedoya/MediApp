@@ -25,12 +25,13 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder; 
+    private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userDetailsService = userDetailsService;
-        this.passwordEncoder = passwordEncoder; 
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
@@ -50,37 +51,47 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(withDefaults())
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                // 1. Endpoints Públicos (Registro y Login para todos)
-                .requestMatchers("/auth/register").permitAll()
-                .requestMatchers("/auth/login").permitAll()
+                .cors(withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        // Permitir solicitudes OPTIONS para CORS preflight desde cualquier origen
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // 2. Endpoints para ROL "USER"
-                .requestMatchers(HttpMethod.POST, "/appointments").hasAnyRole("USER","DOCTOR")
+                        // 1. Endpoints Públicos (Registro, Login y consultas públicas para todos)
+                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
 
-                // 3. Endpoints para ROL "DOCTOR"
-                .requestMatchers("/auth/register/doctor").hasRole("DOCTOR")
-                .requestMatchers("/appointments/**").hasRole("DOCTOR")
-                .requestMatchers("/users/**", "/doctors/**").hasRole("DOCTOR")
-                .requestMatchers("/formulas/**", "/formula-details/**").hasRole("DOCTOR")
-                .requestMatchers(
-                    "/medications/**",  
-                    "/especialidades/**",
-                    "/cities/**", 
-                    "/eps/**", 
-                    "/phones/**", 
-                    "/user-phones/**"
-                ).hasRole("DOCTOR")
-                
-                // 4. Cualquier otra petición no definida requiere autenticación.
-                .anyRequest().authenticated()
-            
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        // ENDPOINTS PÚBLICOS PARA CITIES Y EPS
+                        .requestMatchers(HttpMethod.GET, "/cities").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/cities/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/eps").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/eps/**").permitAll()
+
+                        // 2. Endpoints para ROL "USER"
+                        .requestMatchers(HttpMethod.POST, "/appointments").hasAnyRole("USER", "DOCTOR")
+
+                        // 3. Endpoints para ROL "DOCTOR" (solo operaciones de escritura/modificación)
+                        .requestMatchers("/auth/register/doctor").hasRole("DOCTOR")
+                        .requestMatchers("/appointments/**").hasRole("DOCTOR")
+                        .requestMatchers("/users/**", "/doctors/**").hasRole("DOCTOR")
+                        .requestMatchers("/formulas/**", "/formula-details/**").hasRole("DOCTOR")
+                        .requestMatchers(
+                                "/medications/**",
+                                "/especialidades/**",
+                                // Cities y EPS solo requieren DOCTOR para operaciones POST, PUT, DELETE
+                                "/cities/**",
+                                "/eps/**",
+                                "/phones/**",
+                                "/user-phones/**")
+                        .hasRole("DOCTOR")
+
+                        // 4. Cualquier otra petición no definida requiere autenticación.
+                        .anyRequest().authenticated()
+
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
