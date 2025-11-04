@@ -61,11 +61,13 @@ public class SecurityConfig {
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/login").permitAll()
 
-                        // ENDPOINTS PÚBLICOS PARA CITIES Y EPS
+                        // ENDPOINTS PÚBLICOS PARA CITIES, EPS Y ESPECIALIDADES
                         .requestMatchers(HttpMethod.GET, "/cities").permitAll()
                         .requestMatchers(HttpMethod.GET, "/cities/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/eps").permitAll()
                         .requestMatchers(HttpMethod.GET, "/eps/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/specialities").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/specialities/**").permitAll()
 
                         // 2. Endpoints para ROL "USER"
                         .requestMatchers(HttpMethod.POST, "/appointments").hasAnyRole("USER", "DOCTOR")
@@ -96,20 +98,4 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /*@Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        
-                        .anyRequest().permitAll()
-
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }*/
 }
