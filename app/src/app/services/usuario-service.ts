@@ -11,6 +11,7 @@ import { UserRequestDTO, UserResponseDTO, UserUpdateDTO } from '../interfaces/us
 export class UsuarioService {
 
   private apiUrl = `${environment.apiUrl}/auth/register`;
+  private userApiUrl = `${environment.apiUrl}/users`;
 
   constructor(private http: HttpClient) {}
 
@@ -19,10 +20,13 @@ export class UsuarioService {
   }
 
   getUsuario(cedula: string): Observable<UserResponseDTO> {
-    return this.http.get<UserResponseDTO>(`${this.apiUrl}/${cedula}`);
+    return this.http.get<UserResponseDTO>(`${this.userApiUrl}/${cedula}`);
   }
 
-  actualizarUsuario(cedula: string, usuario: UserUpdateDTO): Observable<UserResponseDTO> {
-    return this.http.put<UserResponseDTO>(`${this.apiUrl}/${cedula}`, usuario);
+  actualizarUsuario(
+    cedula: string,
+    usuario: UserUpdateDTO
+  ): Observable<UserResponseDTO> {
+    return this.http.put<UserResponseDTO>(`${this.userApiUrl}/${cedula}`, usuario);
   }
 }

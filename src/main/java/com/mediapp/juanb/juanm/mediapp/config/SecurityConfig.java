@@ -49,53 +49,37 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        // Permitir solicitudes OPTIONS para CORS preflight desde cualquier origen
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .cors(withDefaults())
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            // Permitir solicitudes OPTIONS para CORS preflight
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 1. Endpoints Públicos (Registro, Login y consultas públicas para todos)
-                        .requestMatchers("/auth/register").permitAll()
-                        .requestMatchers("/auth/login").permitAll()
+            // 1. Endpoints Públicos
+            .requestMatchers("/auth/register", "/auth/login").permitAll()
+            .requestMatchers(HttpMethod.GET, "/cities/**", "/eps/**", "/specialities/**").permitAll()
 
-                        // ENDPOINTS PÚBLICOS PARA CITIES, EPS Y ESPECIALIDADES
-                        .requestMatchers(HttpMethod.GET, "/cities").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/cities/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/eps").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/eps/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/specialities").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/specialities/**").permitAll()
+            // 2. Endpoints para USER y DOCTOR (lectura/modificación personal)
+            .requestMatchers("/appointments/**", "/users/**").hasAnyRole("USER", "DOCTOR")
 
-                        // 2. Endpoints para ROL "USER"
-                        .requestMatchers(HttpMethod.POST, "/appointments").hasAnyRole("USER", "DOCTOR")
+            // 3. Endpoints exclusivos para DOCTOR (gestión médica)
+            .requestMatchers("/auth/register/doctor").hasRole("DOCTOR")
+            .requestMatchers("/doctors/**", "/formulas/**", "/formula-details/**").hasRole("DOCTOR")
+            .requestMatchers(HttpMethod.POST, "/cities/**", "/eps/**", "/phones/**", "/user-phones/**").hasRole("DOCTOR")
+            .requestMatchers(HttpMethod.PUT, "/cities/**", "/eps/**", "/phones/**", "/user-phones/**").hasRole("DOCTOR")
+            .requestMatchers(HttpMethod.DELETE, "/cities/**", "/eps/**", "/phones/**", "/user-phones/**").hasRole("DOCTOR")
+            .requestMatchers("/doc/**").hasRole("DOCTOR")
 
-                        // 3. Endpoints para ROL "DOCTOR" (solo operaciones de escritura/modificación)
-                        .requestMatchers("/auth/register/doctor").hasRole("DOCTOR")
-                        .requestMatchers("/appointments/**").hasRole("DOCTOR")
-                        .requestMatchers("/users/**", "/doctors/**").hasRole("DOCTOR")
-                        .requestMatchers("/formulas/**", "/formula-details/**").hasRole("DOCTOR")
-                        .requestMatchers(
-                                "/medications/**",
-                                "/especialidades/**",
-                                // Cities y EPS solo requieren DOCTOR para operaciones POST, PUT, DELETE
-                                "/cities/**",
-                                "/eps/**",
-                                "/phones/**",
-                                "/user-phones/**")
-                        .hasRole("DOCTOR")
+            // 4. Todo lo demás requiere autenticación
+            .anyRequest().authenticated()
+        )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-                        // 4. Cualquier otra petición no definida requiere autenticación.
-                        .anyRequest().authenticated()
-
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
+    return http.build();
+}
 
 }

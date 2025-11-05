@@ -206,7 +206,7 @@ class UserServiceTest {
         when(userRepository.existsByEmailAndCedulaNot(updateDTO.email(), cedula)).thenReturn(false);
         when(epsRepository.findByName(anyString())).thenReturn(Optional.of(new Eps()));
         when(cityRepository.findByName(anyString())).thenReturn(Optional.of(new City()));
-        when(passwordEncoder.encode(updateDTO.contrasena())).thenReturn("newHashedPassword");
+        when(passwordEncoder.encode(updateDTO.password())).thenReturn("newHashedPassword");
         when(phoneRepository.findByPhone(anyString())).thenReturn(Optional.of(new Phone("3001234567")));
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toUserResponseDTO(user)).thenReturn(userResponseDTO);
@@ -214,7 +214,7 @@ class UserServiceTest {
         UserResponseDTO result = userService.update(cedula, updateDTO);
 
         assertNotNull(result);
-        verify(passwordEncoder, times(1)).encode(updateDTO.contrasena());
+        verify(passwordEncoder, times(1)).encode(updateDTO.password());
         verify(userPhoneRepository, times(1)).deleteAll(any());
         verify(userPhoneRepository, times(1)).save(any());
         verify(userRepository, times(1)).save(user);

@@ -15,7 +15,7 @@ public record UserUpdateDTO(
     String email,
 
     @Size(min = 8, message = "La nueva contraseña debe tener al menos 8 caracteres")
-    String contrasena,
+    String password,
 
     @NotBlank(message = "El nombre de la EPS es obligatorio")
     String epsName,

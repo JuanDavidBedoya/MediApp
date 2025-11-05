@@ -1,128 +1,141 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, resource } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { of } from 'rxjs';
-import { delay } from 'rxjs/operators';
-import { UserResponseDTO, UserUpdateDTO } from '../../interfaces/userDTO'; // Asegúrate que la ruta sea correcta
+import { HttpErrorResponse } from '@angular/common/http';
+import { UserResponseDTO, UserUpdateDTO } from '../../interfaces/userDTO';
+import { AuthService } from '../../services/auth'; 
+import { UsuarioService } from '../../services/usuario-service'; 
+import { environment } from '../../../environment';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './profile.html',
-  styleUrl: './profile.css'
+  styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
 
-  // --- Modelos de Datos ---
-  // Datos que se cargan (para mostrar info estática como la cédula)
   currentUser: UserResponseDTO | null = null;
-  
-  // Datos enlazados al formulario (para actualizar)
+
   userUpdateData: UserUpdateDTO = {
     name: '',
     email: '',
-    password: '', // Empezar vacío
-    epsName: '',   // ID de la EPS
-    cityName: '',  // ID de la Ciudad
-    phones: ['']  // Empezar con un teléfono
+    password: '', 
+    epsName: '', 
+    cityName: '', 
+    phones: [''],
   };
 
-  // --- Listas para Desplegables ---
-  ciudadesList: any[] = [];
-  epsList: any[] = [];
-  cargandoCiudades = false;
-  cargandoEps = false;
+  isSubmitting = false;
+  submissionMessage: { type: 'success' | 'error'; text: string } | null = null;
+  isLoadingProfile = true; 
 
-  constructor() { }
+  cities = resource({
+    loader: () => fetch(`${environment.apiUrl}/cities`).then(result => result.json())
+  });
+
+  epsList = resource({
+    loader: () => fetch(`${environment.apiUrl}/eps`).then(result => result.json())
+  });
+
+  constructor(
+    private authService: AuthService,
+    private usuarioService: UsuarioService
+  ) {}
 
   ngOnInit(): void {
-    this.cargarListas();
-    this.cargarPerfilSimulado();
+    this.cargarPerfil();
   }
 
-  // --- Carga de Datos (Simulada) ---
+  cargarPerfil(): void {
+    this.isLoadingProfile = true;
+    this.submissionMessage = null;
+    const user = this.authService.getUser();
 
-  cargarListas(): void {
-    this.cargarCiudades();
-    this.cargarEps();
-  }
+    if (!user || !user.cedula) {
+      this.submissionMessage = {
+        type: 'error',
+        text: 'No se pudo cargar tu perfil. Intenta iniciar sesión de nuevo.',
+      };
+      this.isLoadingProfile = false;
+      return;
+    }
 
-  cargarCiudades(): void {
-    this.cargandoCiudades = true;
-    const mockCiudadesApiCall = of([
-      { id: 1, nombre: 'Armenia' },
-      { id: 2, nombre: 'Bogotá' },
-      { id: 3, nombre: 'Medellín' },
-      { id: 4, nombre: 'Cali' }
-    ]).pipe(delay(1000)); 
+    this.usuarioService.getUsuario(user.cedula).subscribe({
+      next: (data) => {
+        this.currentUser = data;
 
-    mockCiudadesApiCall.subscribe(data => {
-      this.ciudadesList = data;
-      this.cargandoCiudades = false;
+        this.userUpdateData = {
+          name: data.name,
+          email: data.email,
+          password: '', 
+          phones: data.phones.length > 0 ? [...data.phones] : [''], 
+          epsName: data.epsName, 
+          cityName: data.cityName, 
+        };
+        this.isLoadingProfile = false;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoadingProfile = false;
+        const errorMsg =
+          err.error?.message ||
+          'No se pudo cargar tu perfil. Intenta recargar la página.';
+        this.submissionMessage = { type: 'error', text: errorMsg };
+      },
     });
   }
 
-  cargarEps(): void {
-    this.cargandoEps = true;
-    const mockEpsApiCall = of([
-      { id: 1, nombre: 'Sura' },
-      { id: 2, nombre: 'Sana' },
-      { id: 3, nombre: 'Compensar' },
-      { id: 4, nombre: 'Nueva EPS' }
-    ]).pipe(delay(1500)); 
+  actualizarPerfil(): void {
+    if (this.isSubmitting || !this.currentUser) return;
 
-    mockEpsApiCall.subscribe(data => {
-      this.epsList = data;
-      this.cargandoEps = false;
-    });
-  }
+    this.isSubmitting = true;
+    this.submissionMessage = null;
 
-  /**
-   * Simula la carga del perfil del usuario actual.
-   */
-  cargarPerfilSimulado(): void {
-    // Simula una respuesta de UserResponseDTO
-    const mockProfileData: UserResponseDTO = {
-      cedula: '1094123456',
-      name: 'Usuario de Prueba',
-      email: 'usuario@prueba.com',
-      epsName: 'Sura',       // Nombre (string)
-      cityName: 'Armenia',  // Nombre (string)
-      phones: ['3111234567']
+    const payload: UserUpdateDTO = {
+      ...this.userUpdateData,
+
+      password:
+        this.userUpdateData.password && this.userUpdateData.password.trim() !== ''
+          ? this.userUpdateData.password
+          : null!, 
+
+      phones: this.userUpdateData.phones.filter((tel) => tel && tel.trim() !== ''),
     };
 
-    // Simula la llamada
-    of(mockProfileData).pipe(delay(500)).subscribe(data => {
-      this.currentUser = data;
+    this.usuarioService
+      .actualizarUsuario(this.currentUser.cedula, payload)
+      .subscribe({
+        next: (response) => {
+          this.isSubmitting = false;
+          this.submissionMessage = {
+            type: 'success',
+            text: '¡Perfil actualizado con éxito!',
+          };
 
-      // Mapea los datos al formulario de actualización (UserUpdateDTO)
-      this.userUpdateData = {
-        name: data.name,
-        email: data.email,
-        password: '', // Contraseña siempre vacía al cargar
-        phones: data.phones.length > 0 ? data.phones : [''],
-        // Asignamos los IDs basándonos en los nombres (simulación)
-        // En un caso real, la API de perfil ya debería devolver los IDs
-        epsName: '',   // Asumimos que 'Sura' es el ID 1
-        cityName: '' // Asumimos que 'Armenia' es el ID 1
-      };
-    });
+          this.currentUser = response;
+          this.userUpdateData.name = response.name;
+          this.userUpdateData.email = response.email;
+          this.userUpdateData.epsName = response.epsName;
+          this.userUpdateData.cityName = response.cityName;
+          this.userUpdateData.phones =
+            response.phones.length > 0 ? [...response.phones] : [''];
+          this.userUpdateData.password = '';
+
+          // Recargar la página automáticamente después de la actualización exitosa
+          window.location.reload();
+
+        },
+        error: (err: HttpErrorResponse) => {
+          this.isSubmitting = false;
+
+          const errorMsg =
+            err.error?.message ||
+            'Hubo un error al actualizar. Verifica tus datos.';
+          this.submissionMessage = { type: 'error', text: errorMsg };
+        },
+      });
   }
-
-
-  // --- Lógica del Formulario ---
-
-  /**
-   * Se llama al enviar el formulario.
-   */
-  actualizarPerfil(): void {
-    console.log('Enviando actualización:', this.userUpdateData);
-    // Aquí iría la llamada al servicio:
-    // this.authService.updateProfile(this.userUpdateData).subscribe(...)
-  }
-
-  // --- Lógica de Teléfonos ---
 
   agregarTelefono(): void {
     this.userUpdateData.phones.push('');

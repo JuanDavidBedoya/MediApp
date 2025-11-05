@@ -120,8 +120,8 @@ public class UserService implements UserDetailsService {
         existingUser.setEps(eps);
         existingUser.setCity(city);
 
-        if (userDTO.contrasena() != null && !userDTO.contrasena().isBlank()) {
-            existingUser.setPassword(passwordEncoder.encode(userDTO.contrasena()));
+        if (userDTO.password() != null && !userDTO.password().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(userDTO.password()));
         }
 
         if (userDTO.phones() != null) {
