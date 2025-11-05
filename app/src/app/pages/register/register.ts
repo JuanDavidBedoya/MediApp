@@ -1,6 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, resource } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router'; // Importar Router
+import { Router, RouterLink } from '@angular/router'; 
 import { FormsModule } from '@angular/forms';
 import { register } from 'swiper/element/bundle';
 import { environment } from '../../../environment';

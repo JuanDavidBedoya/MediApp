@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
+import com.mediapp.juanb.juanm.mediapp.dtos.AppointmentResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.UserResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.UserUpdateDTO;
+import com.mediapp.juanb.juanm.mediapp.services.AppointmentService;
 import com.mediapp.juanb.juanm.mediapp.services.UserService;
 
 import jakarta.validation.Valid;
@@ -23,9 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final AppointmentService appointmentService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AppointmentService appointmentService) {
         this.userService = userService;
+        this.appointmentService = appointmentService;
     }
 
     @GetMapping
@@ -42,6 +46,11 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> update(@PathVariable("cedula") String cedula, @Valid @RequestBody UserUpdateDTO userDTO) {
         UserResponseDTO updatedUser = userService.update(cedula, userDTO);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/{cedula}/appointments")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByCedula(@PathVariable("cedula") String cedula) {
+        return ResponseEntity.ok(appointmentService.findByPatientCedula(cedula));
     }
 
     @DeleteMapping("/{cedula}")

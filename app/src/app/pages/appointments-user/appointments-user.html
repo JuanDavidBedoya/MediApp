@@ -1,0 +1,76 @@
+<div class="fixed inset-0 min-h-screen w-full bg-linear-to-b from-blue-700 via-blue-400 to-blue-300 z-10"></div>
+
+<div class="relative flex min-h-screen justify-center rounded-3xl bg-transparent py-24">
+
+  <div class="z-10 mx-auto w-full max-w-6xl rounded-2xl bg-white p-10 border-2 border-blue-500 shadow-2xl">
+
+    <div class="mb-8 text-center">
+      <h3 class="text-3xl font-semibold text-blue-950">Mis Citas Médicas</h3>
+      <p class="text-blue-950 mt-2">
+        Lista de todas tus citas agendadas
+      </p>
+    </div>
+
+    @if (appointments.isLoading()) {
+    <div class="flex justify-center items-center py-10">
+      <span class="text-blue-800 font-medium animate-pulse">Cargando tus citas...</span>
+    </div>
+    } @else if (appointments.error()) {
+    <div class="mb-4 p-4 rounded-lg text-center font-medium bg-red-100 text-red-800">
+      Error al cargar las citas. Intenta recargar la página.
+    </div>
+    } @else if (appointments.value() && appointments.value()!.length === 0) {
+    <div class="text-center py-10">
+      <div class="text-blue-600 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+        </svg>
+      </div>
+      <h4 class="text-xl font-semibold text-blue-950 mb-2">No tienes citas agendadas</h4>
+      <p class="text-blue-700">Cuando agendes una cita, aparecerá aquí.</p>
+    </div>
+    } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (appointment of appointments.value(); track appointment.idAppointment) {
+      <div class="bg-linear-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <div class="bg-blue-600 text-white rounded-full p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+          </div>
+          <span class="text-sm font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
+            Cita #{{ appointment.idAppointment.substring(0, 8) }}
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <label class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Fecha</label>
+            <p class="text-blue-950 font-medium">{{ appointment.date }}</p>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Hora</label>
+            <p class="text-blue-950 font-medium">{{ appointment.time }}</p>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Doctor</label>
+            <p class="text-blue-950 font-medium">Cédula: {{ appointment.doctorCedula }}</p>
+          </div>
+
+          @if (appointment.observations) {
+          <div>
+            <label class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Observaciones</label>
+            <p class="text-blue-950 text-sm">{{ appointment.observations }}</p>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+  </div>
+</div>

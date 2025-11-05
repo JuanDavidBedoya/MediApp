@@ -78,6 +78,12 @@ public class AppointmentService {
             .collect(Collectors.toList());
     }
 
+    public List<AppointmentResponseDTO> findByPatientCedula(String cedula) {
+        return appointmentRepository.findByPatientCedula(cedula).stream()
+            .map(appointmentMapper::toResponseDTO)
+            .collect(Collectors.toList());
+    }
+
     public void delete(UUID id) {
         Appointment appointment = appointmentRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada con ID: " + id));
