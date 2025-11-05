@@ -60,9 +60,7 @@ export class AppointmentsUser implements OnInit {
       return [];
     }
     return this.formulaDetails.value()!.filter(detail => {
-      // Assuming we need to match by appointment ID through formula
-      // This might need adjustment based on how the data is structured
-      return true; // For now, return all - will need to filter properly
+      return detail.appointmentId === appointmentId;
     });
   }
 

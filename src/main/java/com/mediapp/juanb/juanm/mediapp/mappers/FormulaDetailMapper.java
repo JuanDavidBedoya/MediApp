@@ -44,6 +44,7 @@ public class FormulaDetailMapper {
         return new FormulaDetailResponseDTO(
             entity.getIdFormulaDetail(),
             entity.getFormula().getIdFormula(),
+            entity.getFormula().getAppointment().getIdAppointment().toString(),
             entity.getMedication().getName(),
             entity.getQuantity(),
             entity.getDosage()
