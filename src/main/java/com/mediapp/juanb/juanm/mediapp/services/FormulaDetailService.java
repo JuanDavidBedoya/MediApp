@@ -151,11 +151,17 @@ public class FormulaDetailService {
             .collect(Collectors.toList());
     }
 
+    public List<FormulaDetailResponseDTO> findByPatientCedula(String cedula) {
+        return formulaDetailRepository.findByFormulaAppointmentPatientCedula(cedula).stream()
+            .map(formulaDetailMapper::toResponseDTO)
+            .collect(Collectors.toList());
+    }
+
     public void delete(UUID id) {
 
         FormulaDetail detail = formulaDetailRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Detalle de Fórmula no encontrado con ID: " + id));
-        
+
         formulaDetailRepository.delete(detail);
     }
 }

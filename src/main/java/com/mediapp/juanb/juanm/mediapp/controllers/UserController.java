@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import com.mediapp.juanb.juanm.mediapp.dtos.AppointmentResponseDTO;
+import com.mediapp.juanb.juanm.mediapp.dtos.FormulaDetailResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.UserResponseDTO;
 import com.mediapp.juanb.juanm.mediapp.dtos.UserUpdateDTO;
 import com.mediapp.juanb.juanm.mediapp.services.AppointmentService;
+import com.mediapp.juanb.juanm.mediapp.services.FormulaDetailService;
 import com.mediapp.juanb.juanm.mediapp.services.UserService;
 
 import jakarta.validation.Valid;
@@ -26,10 +28,12 @@ public class UserController {
 
     private final UserService userService;
     private final AppointmentService appointmentService;
+    private final FormulaDetailService formulaDetailService;
 
-    public UserController(UserService userService, AppointmentService appointmentService) {
+    public UserController(UserService userService, AppointmentService appointmentService, FormulaDetailService formulaDetailService) {
         this.userService = userService;
         this.appointmentService = appointmentService;
+        this.formulaDetailService = formulaDetailService;
     }
 
     @GetMapping
@@ -51,6 +55,11 @@ public class UserController {
     @GetMapping("/{cedula}/appointments")
     public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByCedula(@PathVariable("cedula") String cedula) {
         return ResponseEntity.ok(appointmentService.findByPatientCedula(cedula));
+    }
+
+    @GetMapping("/{cedula}/formula-details")
+    public ResponseEntity<List<FormulaDetailResponseDTO>> getFormulaDetailsByCedula(@PathVariable("cedula") String cedula) {
+        return ResponseEntity.ok(formulaDetailService.findByPatientCedula(cedula));
     }
 
     @DeleteMapping("/{cedula}")

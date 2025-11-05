@@ -1,5 +1,6 @@
 package com.mediapp.juanb.juanm.mediapp.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,4 +11,5 @@ import com.mediapp.juanb.juanm.mediapp.entities.Formula;
 @Repository
 public interface FormulaRepository extends JpaRepository <Formula, UUID>{
     Optional<Formula> findByAppointmentIdAppointment(UUID idAppointment);
+    List<Formula> findByAppointmentPatientCedula(String cedula);
 }

@@ -63,6 +63,12 @@ public class FormulaService {
             .collect(Collectors.toList());
     }
 
+    public List<FormulaResponseDTO> findByPatientCedula(String cedula) {
+        return formulaRepository.findByAppointmentPatientCedula(cedula).stream()
+            .map(formulaMapper::toResponseDTO)
+            .collect(Collectors.toList());
+    }
+
     public void delete(UUID id) {
         Formula formula = formulaRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Fórmula no encontrada con ID: " + id));
