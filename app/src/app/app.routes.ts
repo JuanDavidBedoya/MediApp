@@ -7,6 +7,7 @@ import { Profile } from './pages/profile/profile';
 import { HomeDoctor } from './pages/home-doctor/home-doctor';
 import { RegisterDoctor } from './pages/register-doctor/register-doctor';
 import { AppointmentsUser } from './pages/appointments-user/appointments-user';
+import { ProfileDoctor } from './pages/profile-doctor/profile-doctor';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home-public', pathMatch: 'full' },
@@ -18,5 +19,6 @@ export const routes: Routes = [
     { path: 'profile', component: Profile},
     { path: 'register-doctor', component: RegisterDoctor},
     { path: 'appointments-user', component: AppointmentsUser},
+    { path: 'profile-doctor', component: ProfileDoctor},
     { path: '**', redirectTo: 'home-public' },
 ];

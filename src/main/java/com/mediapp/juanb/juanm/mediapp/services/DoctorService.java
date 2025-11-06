@@ -10,6 +10,7 @@ import com.mediapp.juanb.juanm.mediapp.exceptions.ResourceNotFoundException;
 import com.mediapp.juanb.juanm.mediapp.mappers.DoctorMapper;
 import com.mediapp.juanb.juanm.mediapp.repositories.DoctorRepository;
 import com.mediapp.juanb.juanm.mediapp.repositories.SpecialityRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,11 +22,13 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final SpecialityRepository specialityRepository;
     private final DoctorMapper doctorMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public DoctorService(DoctorRepository doctorRepository, SpecialityRepository specialityRepository, DoctorMapper doctorMapper) {
+    public DoctorService(DoctorRepository doctorRepository, SpecialityRepository specialityRepository, DoctorMapper doctorMapper, PasswordEncoder passwordEncoder) {
         this.doctorRepository = doctorRepository;
         this.specialityRepository = specialityRepository;
         this.doctorMapper = doctorMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<DoctorResponseDTO> findAll() {
@@ -85,6 +88,10 @@ public class DoctorService {
         existingDoctor.setPhone(doctorDTO.phone());
         existingDoctor.setEmail(doctorDTO.email());
         existingDoctor.setSpeciality(speciality);
+
+        if (doctorDTO.password() != null && !doctorDTO.password().isBlank()) {
+            existingDoctor.setPassword(passwordEncoder.encode(doctorDTO.password()));
+        }
 
         Doctor updatedDoctor = doctorRepository.save(existingDoctor);
         return doctorMapper.toResponseDTO(updatedDoctor);

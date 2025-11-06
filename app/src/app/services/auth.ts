@@ -55,7 +55,7 @@ export class AuthService {
       localStorage.removeItem('role');
       localStorage.removeItem('user');
     }
-    this.router.navigate(['/']); 
+    this.router.navigate(['/login']); 
   }
 
   isLoggedIn(): boolean {

@@ -21,6 +21,6 @@ public record DoctorUpdateDTO(
     @NotBlank(message = "El nombre de la especialidad es obligatorio")
     String specialityName,
 
-    @NotBlank(message = "La contraseña no puede estar vacía")
+    @Size(min = 8, message = "La nueva contraseña debe tener al menos 8 caracteres")
     String password
 ) {}

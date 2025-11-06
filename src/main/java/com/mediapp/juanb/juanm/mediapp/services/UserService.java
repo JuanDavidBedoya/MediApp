@@ -31,7 +31,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final EpsRepository epsRepository;
-    private final CityRepository cityRepository; // Se necesita para la lógica de actualización
+    private final CityRepository cityRepository; 
     private final PasswordEncoder passwordEncoder;
     private final UserPhoneRepository userPhoneRepository;
     private final PhoneRepository phoneRepository;
@@ -70,7 +70,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String cedula) throws UsernameNotFoundException {
-        // Este método debe lanzar UsernameNotFoundException para la integración correcta con Spring Security
+
         return userRepository.findByCedula(cedula)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con cédula: " + cedula));
     }

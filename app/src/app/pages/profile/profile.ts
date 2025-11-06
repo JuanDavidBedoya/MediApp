@@ -122,9 +122,6 @@ export class Profile implements OnInit {
             response.phones.length > 0 ? [...response.phones] : [''];
           this.userUpdateData.password = '';
 
-          // Recargar la página automáticamente después de la actualización exitosa
-          window.location.reload();
-
         },
         error: (err: HttpErrorResponse) => {
           this.isSubmitting = false;

@@ -1,5 +1,5 @@
 <header class="w-full p-4 flex justify-between items-center bg-blue-900
-               text-white shadow-lg fixed top-0 left-0 z-50"> 
+               text-white shadow-lg fixed top-0 left-0 z-100">
   <div class="shrink-0 flex items-center space-x-3">
     <img src="/img/Logo.jpg" 
          alt="Logo Mediapp" 
@@ -27,12 +27,14 @@
           Perfil
         </a>
 
-      } @else if (isDoctor) {
+      } 
+      
+      @if (isDoctor) {
         <a routerLink="/home-doctor" class="font-medium text-gray-200 hover:text-white 
                    transition-colors duration-200 cursor-pointer">
           Inicio
         </a>
-        <a routerLink="/profile" class="font-medium text-gray-200 hover:text-white 
+        <a routerLink="/profile-doctor" class="font-medium text-gray-200 hover:text-white 
                    transition-colors duration-200 cursor-pointer">
           Perfil
         </a>
