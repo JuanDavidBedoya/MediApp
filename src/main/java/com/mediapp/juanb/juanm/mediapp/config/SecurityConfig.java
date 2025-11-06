@@ -70,7 +70,11 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(HttpMethod.POST, "/cities/**", "/eps/**", "/phones/**", "/user-phones/**").hasRole("DOCTOR")
             .requestMatchers(HttpMethod.PUT, "/cities/**", "/eps/**", "/phones/**", "/user-phones/**").hasRole("DOCTOR")
             .requestMatchers(HttpMethod.DELETE, "/cities/**", "/eps/**", "/phones/**", "/user-phones/**").hasRole("DOCTOR")
-            .requestMatchers("/doc/**").hasRole("DOCTOR")
+
+            .requestMatchers(
+                    "/doc/swagger-ui/**",  // Para la UI de Swagger (basado en tu URL)
+                    "/v3/api-docs/**"      // Para el JSON de la API (el default de SpringDoc)
+            ).permitAll()
 
             // 4. Todo lo demás requiere autenticación
             .anyRequest().authenticated()
