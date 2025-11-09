@@ -50,8 +50,8 @@ export class AppointmentsNew implements OnInit {
     });
 
     availableTimeSlots = [
-        '08:00', '09:00', '10:00', '11:00', '12:00',
-        '13:00', '14:00', '15:00', '16:00', '17:00'
+        '08:00:00', '09:00:00', '10:00:00', '11:00:00', '12:00:00',
+        '13:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00'
     ];
 
 
@@ -93,31 +93,47 @@ export class AppointmentsNew implements OnInit {
         this.isSubmitting = true;
         this.submissionMessage = null;
 
-        const payload: AppointmentRequestDTO = {
-            doctorCedula: "20202020", // TODO: Implement automatic doctor selection
-            patientCedula: this.appointmentData.patientCedula!,
-            date: this.selectedDate()!,
-            time: this.selectedTime()!,
-            observations: this.appointmentData.observations || '',
-        };
+        // First, get a doctor for the selected speciality
+        this.appointmentService.getDoctorsBySpeciality(this.selectedSpecialityName()!).subscribe({
+            next: (doctors) => {
+                if (doctors && doctors.length > 0) {
+                    const doctorCedula = doctors[0].cedula; // Take the first available doctor
 
-        this.appointmentService.scheduleAppointment(payload).subscribe({
-            next: (response) => {
-                this.isSubmitting = false;
+                    const payload: AppointmentRequestDTO = {
+                        doctorCedula: doctorCedula,
+                        patientCedula: this.appointmentData.patientCedula!,
+                        date: this.selectedDate()!,
+                        time: this.selectedTime()!,
+                        observations: this.appointmentData.observations || '',
+                    };
 
-                this.submissionMessage = {
-                    type: 'success',
-                    text: `¡Cita agendada con éxito el ${response.date} a las ${response.time}! Redirigiendo...`,
-                };
-                setTimeout(() => this.router.navigate(['/appointments-user']), 3000);
+                    this.appointmentService.scheduleAppointment(payload).subscribe({
+                        next: (response) => {
+                            this.isSubmitting = false;
+
+                            this.submissionMessage = {
+                                type: 'success',
+                                text: `¡Cita agendada con éxito el ${response.date} a las ${response.time}! Redirigiendo...`,
+                            };
+                            setTimeout(() => this.router.navigate(['/appointments-user']), 3000);
+                        },
+                        error: (err: HttpErrorResponse) => {
+                            this.isSubmitting = false;
+                            const errorMsg =
+                                err.error?.message ||
+                                'Hubo un error al agendar la cita. Verifica que haya disponibilidad.';
+                            this.submissionMessage = { type: 'error', text: errorMsg };
+                        },
+                    });
+                } else {
+                    this.isSubmitting = false;
+                    this.submissionMessage = { type: 'error', text: 'No hay doctores disponibles para esta especialidad.' };
+                }
             },
-            error: (err: HttpErrorResponse) => {
+            error: (err) => {
                 this.isSubmitting = false;
-                const errorMsg =
-                    err.error?.message ||
-                    'Hubo un error al agendar la cita. Verifica que haya disponibilidad.';
-                this.submissionMessage = { type: 'error', text: errorMsg };
-            },
+                this.submissionMessage = { type: 'error', text: 'Error al obtener doctores disponibles.' };
+            }
         });
     }
 }

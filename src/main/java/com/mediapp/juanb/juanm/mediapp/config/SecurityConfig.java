@@ -59,10 +59,11 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 
             // 1. Endpoints Públicos
             .requestMatchers("/auth/register", "/auth/login").permitAll()
-            .requestMatchers(HttpMethod.GET, "/cities/**", "/eps/**", "/specialities/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/cities/**", "/eps/**", "/specialities/**", "/doctors/**").permitAll()
 
             // 2. Endpoints para USER y DOCTOR (lectura/modificación personal)
-            .requestMatchers("/appointments/**", "/users/**").hasAnyRole("USER", "DOCTOR")
+            .requestMatchers("/appointments/**").permitAll()
+            .requestMatchers("/users/**").hasAnyRole("USER", "DOCTOR")
 
             // 3. Endpoints exclusivos para DOCTOR (gestión médica)
             .requestMatchers("/auth/register/doctor").hasRole("DOCTOR")
