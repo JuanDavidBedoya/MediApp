@@ -14,7 +14,6 @@ register();
   standalone: true,
   imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './register.html',
-  styleUrl: './register.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Register {

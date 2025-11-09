@@ -11,8 +11,7 @@ import { environment } from '../../../environment';
   selector: 'app-profile-doctor',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './profile-doctor.html', 
-  styleUrl: './profile-doctor.css',
+  templateUrl: './profile-doctor.html'
 })
 export class ProfileDoctor implements OnInit {
 

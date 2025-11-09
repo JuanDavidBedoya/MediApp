@@ -5,8 +5,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-home-public',
   imports: [RouterModule, CommonModule],
-  templateUrl: './home-public.html',
-  styleUrl: './home-public.css',
+  templateUrl: './home-public.html'
 })
 export class HomePublic {
 

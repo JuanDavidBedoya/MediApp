@@ -8,6 +8,9 @@ import { HomeDoctor } from './pages/home-doctor/home-doctor';
 import { RegisterDoctor } from './pages/register-doctor/register-doctor';
 import { AppointmentsUser } from './pages/appointments-user/appointments-user';
 import { ProfileDoctor } from './pages/profile-doctor/profile-doctor';
+import { AppointmentsNew } from './pages/appointments-new/appointments-new';
+import { FormulaNew } from './pages/formula-new/formula-new';
+import { AppointmentsDoctor } from './pages/appointments-doctor/appointments-doctor';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home-public', pathMatch: 'full' },
@@ -19,6 +22,9 @@ export const routes: Routes = [
     { path: 'profile', component: Profile},
     { path: 'register-doctor', component: RegisterDoctor},
     { path: 'appointments-user', component: AppointmentsUser},
+    { path: 'appointments-doctor', component: AppointmentsDoctor },
+    { path: 'appointments-new', component: AppointmentsNew},
     { path: 'profile-doctor', component: ProfileDoctor},
+    { path: 'create-formula', component: FormulaNew},
     { path: '**', redirectTo: 'home-public' },
 ];

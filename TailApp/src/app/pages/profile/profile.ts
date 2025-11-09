@@ -11,8 +11,7 @@ import { environment } from '../../../environment';
   selector: 'app-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './profile.html',
-  styleUrl: './profile.css',
+  templateUrl: './profile.html'
 })
 export class Profile implements OnInit {
 

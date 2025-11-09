@@ -9,8 +9,7 @@ import { FormulaDetailResponseDTO } from '../../interfaces/formulaDetailDTO';
   selector: 'app-appointments-user',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './appointments-user.html',
-  styleUrl: './appointments-user.css',
+  templateUrl: './appointments-user.html'
 })
 export class AppointmentsUser implements OnInit {
 

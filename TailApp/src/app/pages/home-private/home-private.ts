@@ -5,8 +5,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-home-private',
   imports: [RouterModule, CommonModule],
-  templateUrl: './home-private.html',
-  styleUrl: './home-private.css',
+  templateUrl: './home-private.html'
 })
 export class HomePrivate {
 

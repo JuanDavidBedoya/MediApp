@@ -17,7 +17,6 @@ import { DoctorRequestDTO } from '../../interfaces/doctorDTO';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './register-doctor.html',
-  styleUrl: './register-doctor.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class RegisterDoctor {

@@ -7,8 +7,7 @@ import { AuthService } from '../../services/auth'; // Asegúrate que la ruta sea
   selector: 'app-home-doctor',
   standalone: true,
   imports: [CommonModule, RouterLink], // Añade CommonModule y RouterLink
-  templateUrl: './home-doctor.html',
-  styleUrl: './home-doctor.css'
+  templateUrl: './home-doctor.html'
 })
 export class HomeDoctor {
 

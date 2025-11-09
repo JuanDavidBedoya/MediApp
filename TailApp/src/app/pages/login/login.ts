@@ -13,7 +13,6 @@ register();
   selector: 'app-login',
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.html',
-  styleUrl: './login.css',
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
