@@ -12,7 +12,6 @@ import { DoctorRequestDTO } from '../../interfaces/doctorDTO';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './register-doctor.html',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class RegisterDoctor {
   showPassword = false;

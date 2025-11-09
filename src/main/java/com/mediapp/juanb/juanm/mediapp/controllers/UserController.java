@@ -41,6 +41,16 @@ public class UserController {
         return ResponseEntity.ok(userService.findAll());
     }
 
+    @GetMapping("/eps/{epsName}")
+    public ResponseEntity<List<UserResponseDTO>> getByEpsName(@PathVariable("epsName") String epsName) {
+        return ResponseEntity.ok(userService.findByEpsName(epsName));
+    }
+
+    @GetMapping("/city/{cityName}")
+    public ResponseEntity<List<UserResponseDTO>> getByCityName(@PathVariable("cityName") String cityName) {
+        return ResponseEntity.ok(userService.findByCityName(cityName));
+    }
+
     @GetMapping("/{cedula}")
     public ResponseEntity<UserResponseDTO> getByCedula(@PathVariable("cedula") String cedula) {
         return ResponseEntity.ok(userService.findByCedula(cedula));

@@ -1,5 +1,6 @@
 package com.mediapp.juanb.juanm.mediapp.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +19,9 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.email = :email AND u.cedula != :cedula")
     boolean existsByEmailAndCedulaNot(@Param("email") String email, @Param("cedula") String cedula);
+
+    List<User> findByEps_Name(String epsName);
+
+    List<User> findByCity_Name(String cityName);
 
 }

@@ -14,6 +14,7 @@ import { AppointmentsDoctor } from './pages/appointments-doctor/appointments-doc
 import { DoctorGuard } from './guards/doctor-guard';
 import { AuthenticatedGuard } from './guards/authenticated-guard';
 import { AuthGuard } from './guards/auth-guard';
+import { UserList } from './pages/user-list/user-list';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home-public', pathMatch: 'full' },
@@ -29,5 +30,6 @@ export const routes: Routes = [
     { path: 'appointments-new', component: AppointmentsNew, canActivate: [AuthGuard]},
     { path: 'profile-doctor', component: ProfileDoctor, canActivate: [DoctorGuard]},
     { path: 'create-formula', component: FormulaNew, canActivate: [DoctorGuard]},
+    { path: 'user-list', component: UserList, canActivate: [DoctorGuard]},
     { path: '**', redirectTo: 'home-public'},
 ];

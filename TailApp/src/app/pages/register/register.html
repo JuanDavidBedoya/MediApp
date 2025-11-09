@@ -34,7 +34,6 @@
       </p>
     </div>
 
-    <!-- Área de Mensajes de Envío -->
     @if (submissionMessage) {
     <div class="mb-4 p-4 rounded-lg text-center font-medium"
       [ngClass]="{'bg-green-100 text-green-800': submissionMessage.type === 'success', 'bg-red-100 text-red-800': submissionMessage.type === 'error'}">
@@ -44,9 +43,8 @@
 
     <form #registroForm="ngForm" (ngSubmit)="registrarUsuario()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      <!-- COLUMNA IZQUIERDA -->
       <div class="space-y-3">
-        <!-- Cédula -->
+
         <div>
           <input type="text" placeholder="Cédula" name="cedula" [(ngModel)]="formData.cedula" #cedula="ngModel" required
             minlength="5" maxlength="15"
@@ -63,7 +61,6 @@
           }
         </div>
 
-        <!-- Nombre Completo -->
         <div>
           <input type="text" placeholder="Nombre Completo" name="nombre" [(ngModel)]="formData.name" #nombre="ngModel"
             required
@@ -78,7 +75,6 @@
           }
         </div>
 
-        <!-- Correo Electrónico -->
         <div>
           <input type="email" placeholder="Correo Electrónico" name="email" [(ngModel)]="formData.email" #email="ngModel"
             required email
@@ -94,7 +90,6 @@
           }
         </div>
 
-        <!-- EPS -->
         <div>
           <select name="eps" [(ngModel)]="formData.epsName" #eps="ngModel" required
             class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 
@@ -115,7 +110,6 @@
           }
         </div>
 
-        <!-- Ciudad -->
         <div>
           <select name="ciudad" [(ngModel)]="formData.cityName" #ciudad="ngModel" required
             class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 
@@ -137,9 +131,9 @@
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA -->
+
       <div class="space-y-3">
-        <!-- Contraseña -->
+
         <div class="relative">
           <input [type]="showPassword ? 'text' : 'password'" placeholder="Contraseña" name="contrasena"
             [(ngModel)]="formData.password" #contrasena="ngModel" required minlength="8"
@@ -172,7 +166,6 @@
         </div>
         }
 
-        <!-- Teléfonos -->
         <div class="space-y-3">
           @for (telefono of telefonos; track i; let i = $index) {
           <div class="flex items-center space-x-2">
