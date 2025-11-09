@@ -25,6 +25,7 @@ export class Login {
 
   errorMessage: string | null = null;
   isLoading: boolean = false;
+  showPassword: boolean = false;
 
   constructor(
     private authService: AuthService,

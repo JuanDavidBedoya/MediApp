@@ -29,4 +29,16 @@ export class UsuarioService {
   ): Observable<UserResponseDTO> {
     return this.http.put<UserResponseDTO>(`${this.userApiUrl}/${cedula}`, usuario);
   }
+
+  getAllUsers(): Observable<UserResponseDTO[]> {
+    return this.http.get<UserResponseDTO[]>(this.userApiUrl);
+  }
+
+  getUsersByEps(epsName: string): Observable<UserResponseDTO[]> {
+    return this.http.get<UserResponseDTO[]>(`${this.userApiUrl}/eps/${epsName}`);
+  }
+
+  getUsersByCity(cityName: string): Observable<UserResponseDTO[]> {
+    return this.http.get<UserResponseDTO[]>(`${this.userApiUrl}/city/${cityName}`);
+  }
 }

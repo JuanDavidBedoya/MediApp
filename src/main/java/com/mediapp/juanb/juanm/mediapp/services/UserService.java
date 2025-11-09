@@ -55,6 +55,20 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
+    public List<UserResponseDTO> findByEpsName(String epsName) {
+        return userRepository.findByEps_Name(epsName)
+                .stream()
+                .map(userMapper::toUserResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponseDTO> findByCityName(String cityName) {
+        return userRepository.findByCity_Name(cityName)
+                .stream()
+                .map(userMapper::toUserResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     public UserResponseDTO findByCedula(String cedula) {
         User user = userRepository.findByCedula(cedula)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con cédula: " + cedula));
