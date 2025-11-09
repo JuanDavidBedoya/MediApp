@@ -35,4 +35,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
         @Param("patientCedula") String patientCedula,
         @Param("date") Date date,
         @Param("time") Time time);
+
+    @Query("SELECT a FROM Appointment a WHERE a.doctor.cedula = :cedula")
+    List<Appointment> findByDoctorCedula(@Param("cedula") String cedula);
+
+    @Query("SELECT a FROM Appointment a WHERE a.doctor.cedula = :cedula AND a.date = :date")
+    List<Appointment> findByDoctorCedulaAndDate(@Param("cedula") String cedula, @Param("date") Date date);
+
+    @Query("SELECT a FROM Appointment a WHERE a.doctor.cedula = :cedula AND a.date BETWEEN :startDate AND :endDate")
+    List<Appointment> findByDoctorCedulaAndDateRange(@Param("cedula") String cedula, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

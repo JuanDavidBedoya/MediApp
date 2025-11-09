@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/appointments")
@@ -60,5 +61,46 @@ public class AppointmentController {
     public ResponseEntity<Void> deleteAppointment(@PathVariable UUID id) {
         appointmentService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/doctor")
+    public ResponseEntity<List<AppointmentResponseDTO>> getDoctorAppointments(
+            @RequestParam String doctorCedula,
+            @RequestParam String filterType,
+            @RequestParam(required = false) String date) {
+
+        List<AppointmentResponseDTO> appointments;
+
+        switch (filterType.toUpperCase()) {
+            case "TODAY":
+                appointments = appointmentService.findByDoctorCedulaAndDate(doctorCedula, java.time.LocalDate.now());
+                break;
+            case "WEEK":
+                appointments = appointmentService.findByDoctorCedulaAndDateRange(
+                    doctorCedula,
+                    java.time.LocalDate.now(),
+                    java.time.LocalDate.now().plusDays(7)
+                );
+                break;
+            case "MONTH":
+                appointments = appointmentService.findByDoctorCedulaAndDateRange(
+                    doctorCedula,
+                    java.time.LocalDate.now().withDayOfMonth(1),
+                    java.time.LocalDate.now().plusMonths(1).withDayOfMonth(1)
+                );
+                break;
+            case "CUSTOM":
+                if (date != null && !date.isEmpty()) {
+                    appointments = appointmentService.findByDoctorCedulaAndDate(doctorCedula, java.time.LocalDate.parse(date));
+                } else {
+                    appointments = appointmentService.findByDoctorCedula(doctorCedula);
+                }
+                break;
+            default:
+                appointments = appointmentService.findByDoctorCedula(doctorCedula);
+                break;
+        }
+
+        return ResponseEntity.ok(appointments);
     }
 }

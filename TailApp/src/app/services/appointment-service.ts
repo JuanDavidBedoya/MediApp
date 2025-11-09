@@ -55,10 +55,11 @@ export class AppointmentService {
     let params = new HttpParams()
       .set('doctorCedula', doctorCedula)
       .set('filterType', filter);
-      
+
     if (filter === 'CUSTOM' && customDate) {
+      console.log('Enviando fecha al backend:', customDate);
       params = params.set('date', customDate);
     }
-    return this.http.get<AppointmentResponseDTO[]>(`${this.apiUrl}/doctor`, { params });
+    return this.http.get<AppointmentResponseDTO[]>(`${this.apiUrl}/appointments/doctor`, { params });
   }
 }

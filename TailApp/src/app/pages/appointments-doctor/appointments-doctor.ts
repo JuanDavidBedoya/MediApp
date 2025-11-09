@@ -76,6 +76,7 @@ export class AppointmentsDoctor implements OnInit {
 
   onDateChange(event: Event): void {
     const date = (event.target as HTMLInputElement).value;
+    console.log('Fecha seleccionada en frontend:', date);
     this.customDate.set(date);
     this.errorMessage.set(null);
   }
@@ -92,7 +93,9 @@ export class AppointmentsDoctor implements OnInit {
   formatDate(dateString: string): string {
     if (!dateString) return 'N/A';
     try {
-        return new Date(dateString).toLocaleDateString('es-CO', {
+        // Crear fecha sin zona horaria para evitar problemas de conversión
+        const date = new Date(dateString + 'T00:00:00');
+        return date.toLocaleDateString('es-CO', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',

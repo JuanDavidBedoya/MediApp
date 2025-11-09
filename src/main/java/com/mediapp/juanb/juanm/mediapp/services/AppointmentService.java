@@ -94,4 +94,25 @@ public class AppointmentService {
 
         appointmentRepository.delete(appointment);
     }
+
+    public List<AppointmentResponseDTO> findByDoctorCedula(String cedula) {
+        return appointmentRepository.findByPatientCedula(cedula).stream()
+            .map(appointmentMapper::toResponseDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<AppointmentResponseDTO> findByDoctorCedulaAndDate(String cedula, java.time.LocalDate date) {
+        Date sqlDate = Date.valueOf(date);
+        return appointmentRepository.findByDoctorCedulaAndDate(cedula, sqlDate).stream()
+            .map(appointmentMapper::toResponseDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<AppointmentResponseDTO> findByDoctorCedulaAndDateRange(String cedula, java.time.LocalDate startDate, java.time.LocalDate endDate) {
+        Date sqlStartDate = Date.valueOf(startDate);
+        Date sqlEndDate = Date.valueOf(endDate);
+        return appointmentRepository.findByDoctorCedulaAndDateRange(cedula, sqlStartDate, sqlEndDate).stream()
+            .map(appointmentMapper::toResponseDTO)
+            .collect(Collectors.toList());
+    }
 }
