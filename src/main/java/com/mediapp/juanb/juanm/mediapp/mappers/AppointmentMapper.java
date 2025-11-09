@@ -39,7 +39,7 @@ public class AppointmentMapper {
         Doctor doctor = doctorRepository.findById(dto.doctorCedula())
             .orElseThrow(() -> new ResourceNotFoundException("Doctor no encontrado: " + dto.doctorCedula()));
         entity.setDoctor(doctor);
-        
+
         User patient = userRepository.findById(dto.patientCedula())
             .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado: " + dto.patientCedula()));
         entity.setPatient(patient);

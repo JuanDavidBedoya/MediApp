@@ -18,6 +18,9 @@ public interface DoctorRepository extends JpaRepository <Doctor, String>{
     boolean existsByEmailAndCedulaNot(@Param("email") String email, @Param("cedula") String cedula);
 
     Optional<Doctor> findByCedula(String cedula);
+
+    @Query("SELECT d FROM Doctor d WHERE d.speciality.name = :specialityName ORDER BY d.cedula LIMIT 1")
+    Optional<Doctor> findFirstBySpecialityName(@Param("specialityName") String specialityName);
 }
 
 

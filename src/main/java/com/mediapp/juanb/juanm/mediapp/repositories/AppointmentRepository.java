@@ -19,10 +19,19 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     List<Appointment> findByPatientCedula(String cedula);
 
     @Query("SELECT a FROM Appointment a " +
-           "WHERE (a.doctor.cedula = :doctorCedula OR a.patient.cedula = :patientCedula) " +
-           "AND a.date = :date AND a.time = :time")
+            "WHERE (a.doctor.cedula = :doctorCedula OR a.patient.cedula = :patientCedula) " +
+            "AND a.date = :date AND a.time = :time")
     Optional<Appointment> findConflictingAppointment(
         @Param("doctorCedula") String doctorCedula,
+        @Param("patientCedula") String patientCedula,
+        @Param("date") Date date,
+        @Param("time") Time time);
+
+    @Query("SELECT a FROM Appointment a " +
+            "WHERE (a.doctor.speciality.name = :specialityName OR a.patient.cedula = :patientCedula) " +
+            "AND a.date = :date AND a.time = :time")
+    Optional<Appointment> findConflictingAppointmentBySpeciality(
+        @Param("specialityName") String specialityName,
         @Param("patientCedula") String patientCedula,
         @Param("date") Date date,
         @Param("time") Time time);

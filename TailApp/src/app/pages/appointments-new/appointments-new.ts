@@ -22,7 +22,6 @@ export class AppointmentsNew implements OnInit {
     private router = inject(Router);
 
     selectedSpecialityName = signal<string | undefined>(undefined);
-    selectedDoctorCedula = signal<string | undefined>(undefined);
     selectedDate = signal<string | undefined>(undefined);
     selectedTime = signal<string | undefined>(undefined);
 
@@ -50,28 +49,10 @@ export class AppointmentsNew implements OnInit {
         defaultValue: [] as SpecialityResponseDTO[]
     });
 
-    doctorsResource = resource({
-        params: () => ({ speciality: this.selectedSpecialityName() }),
-        loader: ({ params }) => {
-            const speciality = params.speciality;
-            if (!speciality) return Promise.resolve([]);
-            return this.appointmentService.getDoctorsBySpeciality(speciality!).toPromise() as Promise<DoctorResponseDTO[]>;
-        },
-        defaultValue: [] as DoctorResponseDTO[]
-    });
-
-    availableSlotsResource = resource({
-        params: () => ({
-            doctorCedula: this.selectedDoctorCedula(),
-            date: this.selectedDate()
-        }),
-        loader: ({ params }) => {
-            const { doctorCedula, date } = params;
-            if (!doctorCedula || !date) return Promise.resolve([]);
-            return this.appointmentService.getAvailableSlots(doctorCedula, date).toPromise() as Promise<string[]>;
-        },
-        defaultValue: [] as string[]
-    });
+    availableTimeSlots = [
+        '08:00', '09:00', '10:00', '11:00', '12:00',
+        '13:00', '14:00', '15:00', '16:00', '17:00'
+    ];
 
 
     ngOnInit(): void {
@@ -89,14 +70,6 @@ export class AppointmentsNew implements OnInit {
     onSpecialityChange(event: Event): void {
         const specialityName = (event.target as HTMLSelectElement).value;
         this.selectedSpecialityName.set(specialityName);
-        this.selectedDoctorCedula.set(undefined);
-        this.selectedDate.set(undefined);
-        this.selectedTime.set(undefined);
-    }
-
-    onDoctorChange(event: Event): void {
-        const doctorCedula = (event.target as HTMLSelectElement).value;
-        this.selectedDoctorCedula.set(doctorCedula);
         this.selectedDate.set(undefined);
         this.selectedTime.set(undefined);
     }
@@ -112,8 +85,8 @@ export class AppointmentsNew implements OnInit {
     }
 
     scheduleAppointment(): void {
-        if (this.isSubmitting || !this.selectedDoctorCedula() || !this.selectedDate() || !this.selectedTime()) {
-            this.submissionMessage = { type: 'error', text: 'Por favor, completa los campos de Especialidad, Doctor, Fecha y Hora.' };
+        if (this.isSubmitting || !this.selectedSpecialityName() || !this.selectedDate() || !this.selectedTime()) {
+            this.submissionMessage = { type: 'error', text: 'Por favor, completa los campos de Especialidad, Fecha y Hora.' };
             return;
         }
 
@@ -121,8 +94,8 @@ export class AppointmentsNew implements OnInit {
         this.submissionMessage = null;
 
         const payload: AppointmentRequestDTO = {
+            doctorCedula: "20202020", // TODO: Implement automatic doctor selection
             patientCedula: this.appointmentData.patientCedula!,
-            doctorCedula: this.selectedDoctorCedula()!,
             date: this.selectedDate()!,
             time: this.selectedTime()!,
             observations: this.appointmentData.observations || '',
@@ -132,11 +105,9 @@ export class AppointmentsNew implements OnInit {
             next: (response) => {
                 this.isSubmitting = false;
 
-                const doctorName = this.doctorsResource.value().find(d => d.cedula === response.doctorCedula)?.name || 'el doctor';
-
                 this.submissionMessage = {
                     type: 'success',
-                    text: `¡Cita agendada con éxito con ${doctorName} el ${response.date} a las ${response.time}! Redirigiendo...`,
+                    text: `¡Cita agendada con éxito el ${response.date} a las ${response.time}! Redirigiendo...`,
                 };
                 setTimeout(() => this.router.navigate(['/appointments-user']), 3000);
             },
@@ -144,7 +115,7 @@ export class AppointmentsNew implements OnInit {
                 this.isSubmitting = false;
                 const errorMsg =
                     err.error?.message ||
-                    'Hubo un error al agendar la cita. Verifica que el doctor tenga disponibilidad.';
+                    'Hubo un error al agendar la cita. Verifica que haya disponibilidad.';
                 this.submissionMessage = { type: 'error', text: errorMsg };
             },
         });

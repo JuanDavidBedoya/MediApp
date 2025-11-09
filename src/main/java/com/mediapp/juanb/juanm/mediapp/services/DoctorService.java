@@ -104,4 +104,11 @@ public class DoctorService {
         }
         doctorRepository.deleteById(cedula);
     }
+
+    public List<DoctorResponseDTO> findBySpecialityName(String specialityName) {
+        return doctorRepository.findAll().stream()
+                .filter(doctor -> doctor.getSpeciality().getName().equals(specialityName))
+                .map(doctorMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
 }

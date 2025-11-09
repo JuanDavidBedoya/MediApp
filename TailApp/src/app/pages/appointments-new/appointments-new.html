@@ -8,7 +8,7 @@
     <div class="mb-8 text-center">
       <h3 class="text-3xl font-bold text-blue-950">Agendar Nueva Cita Médica 🩺</h3>
       <p class="text-blue-950 mt-2">
-        Completa los datos para encontrar un horario disponible.
+        Selecciona especialidad, fecha y hora. El doctor se asignará automáticamente.
       </p>
     </div>
 
@@ -52,32 +52,6 @@
           }
         </div>
 
-        <div>
-          <label for="doctor" class="block text-sm font-medium text-blue-950 mb-1">Doctor Disponible</label>
-          <select id="doctor" name="doctor" required (change)="onDoctorChange($event)"
-            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 
-                   focus:border-blue-800 focus:bg-blue-200 focus:outline-none 
-                   focus:scale-[1.01] transition-transform duration-300 ease-out"
-            [ngModel]="selectedDoctorCedula()" #doctor="ngModel" 
-            [disabled]="!selectedSpecialityName() || doctorsResource.isLoading()">
-            
-            <option [ngValue]="undefined" disabled selected>
-              @if (doctorsResource.isLoading()) { Buscando Doctores... } 
-              @else if (doctorsResource.value().length === 0 && selectedSpecialityName()) { No hay doctores en esta especialidad }
-              @else if (!selectedSpecialityName()) { Selecciona una Especialidad primero }
-              @else { Selecciona un Doctor }
-            </option>
-
-            @for (doc of doctorsResource.value(); track doc.cedula) {
-            <option [value]="doc.cedula">{{ doc.name }} (Cédula: {{ doc.cedula }})</option>
-            }
-          </select>
-          @if (doctor.invalid && (doctor.dirty || doctor.touched)) {
-            <div class="mt-1 text-xs text-red-600">
-              <p>Debes seleccionar un doctor.</p>
-            </div>
-          }
-        </div>
 
       </div>
 
@@ -86,10 +60,10 @@
         <div>
           <label for="date" class="block text-sm font-medium text-blue-950 mb-1">Fecha de la Cita</label>
           <input type="date" id="date" name="date" required (change)="onDateChange($event)" [min]="minDate"
-            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 
-                   focus:border-blue-800 focus:bg-blue-200 focus:outline-none 
+            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950
+                   focus:border-blue-800 focus:bg-blue-200 focus:outline-none
                    focus:scale-[1.01] transition-transform duration-300 ease-out"
-            [ngModel]="selectedDate()" #date="ngModel" [disabled]="!selectedDoctorCedula()">
+            [ngModel]="selectedDate()" #date="ngModel" [disabled]="!selectedSpecialityName()">
           @if (date.invalid && (date.dirty || date.touched)) {
             <div class="mt-1 text-xs text-red-600">
               <p>La fecha es obligatoria.</p>
@@ -98,22 +72,20 @@
         </div>
 
         <div>
-          <label for="time" class="block text-sm font-medium text-blue-950 mb-1">Horario Disponible</label>
+          <label for="time" class="block text-sm font-medium text-blue-950 mb-1">Hora de la Cita</label>
           <select id="time" name="time" required (change)="onTimeChange($event)"
-            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950 
-                   focus:border-blue-800 focus:bg-blue-200 focus:outline-none 
+            class="w-full rounded-lg border bg-blue-100 px-4 py-3 text-sm text-blue-950
+                   focus:border-blue-800 focus:bg-blue-200 focus:outline-none
                    focus:scale-[1.01] transition-transform duration-300 ease-out"
-            [ngModel]="selectedTime()" #time="ngModel" 
-            [disabled]="!selectedDate() || availableSlotsResource.isLoading() || availableSlotsResource.value().length === 0">
-            
+            [ngModel]="selectedTime()" #time="ngModel"
+            [disabled]="!selectedDate()">
+
             <option [ngValue]="undefined" disabled selected>
-              @if (availableSlotsResource.isLoading()) { Buscando horarios... } 
-              @else if (availableSlotsResource.value().length === 0 && selectedDate()) { No hay horarios disponibles para {{ selectedDate() }} }
-              @else if (!selectedDate()) { Selecciona una fecha }
+              @if (!selectedDate()) { Selecciona una fecha primero }
               @else { Selecciona una hora }
             </option>
-            
-            @for (slot of availableSlotsResource.value(); track slot) {
+
+            @for (slot of availableTimeSlots; track slot) {
             <option [value]="slot">{{ slot }}</option>
             }
           </select>

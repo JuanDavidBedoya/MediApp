@@ -30,7 +30,7 @@ public class AppointmentService {
     private void validateTimeConflict(String doctorCedula, String patientCedula, Date date, Time time, UUID currentAppointmentId) {
 
         Optional<Appointment> conflict = appointmentRepository.findConflictingAppointment(doctorCedula, patientCedula, date, time);
-        
+
         conflict.ifPresent(app -> {
             if (currentAppointmentId == null || !app.getIdAppointment().equals(currentAppointmentId)) {
                 if (app.getDoctor().getCedulaDoctor().equals(doctorCedula)) {
@@ -49,7 +49,7 @@ public class AppointmentService {
 
         Appointment appointment = appointmentMapper.toEntity(requestDTO, null);
         Appointment savedAppointment = appointmentRepository.save(appointment);
-        
+
         return appointmentMapper.toResponseDTO(savedAppointment);
     }
 
@@ -60,7 +60,7 @@ public class AppointmentService {
         validateTimeConflict(requestDTO.doctorCedula(), requestDTO.patientCedula(), requestDTO.date(), requestDTO.time(), id);
 
         Appointment updatedAppointment = appointmentMapper.toEntity(requestDTO, id);
-        updatedAppointment.setIdAppointment(id); 
+        updatedAppointment.setIdAppointment(id);
 
         Appointment savedAppointment = appointmentRepository.save(updatedAppointment);
         return appointmentMapper.toResponseDTO(savedAppointment);

@@ -40,4 +40,9 @@ public class DoctorController {
         doctorService.delete(cedula);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/bySpeciality")
+    public ResponseEntity<List<DoctorResponseDTO>> getBySpeciality(@RequestParam("speciality") String specialityName) {
+        return ResponseEntity.ok(doctorService.findBySpecialityName(specialityName));
+    }
 }

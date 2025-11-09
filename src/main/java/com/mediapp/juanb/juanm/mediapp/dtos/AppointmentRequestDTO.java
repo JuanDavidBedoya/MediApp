@@ -9,16 +9,16 @@ import java.sql.Date;
 
 public record AppointmentRequestDTO(
     @NotBlank(message = "La cédula del doctor es obligatoria")
-    String doctorCedula, 
-    
+    String doctorCedula,
+
     @NotBlank(message = "La cédula del paciente es obligatoria")
-    String patientCedula, 
-    
+    String patientCedula,
+
     @NotNull(message = "La fecha de la cita es obligatoria")
     Date date,
-    
+
     @NotNull(message = "La hora de la cita es obligatoria")
     Time time,
-    
+
     String observations
 ) {}
