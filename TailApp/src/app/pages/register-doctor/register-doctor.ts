@@ -1,12 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, resource } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router'; 
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../../environment';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DoctorService } from '../../services/doctor-service';
