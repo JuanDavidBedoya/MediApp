@@ -11,20 +11,23 @@ import { ProfileDoctor } from './pages/profile-doctor/profile-doctor';
 import { AppointmentsNew } from './pages/appointments-new/appointments-new';
 import { FormulaNew } from './pages/formula-new/formula-new';
 import { AppointmentsDoctor } from './pages/appointments-doctor/appointments-doctor';
+import { DoctorGuard } from './guards/doctor-guard';
+import { AuthenticatedGuard } from './guards/authenticated-guard';
+import { AuthGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home-public', pathMatch: 'full' },
-    { path: 'login', component: Login},
-    { path: 'home-public', component: HomePublic},
-    { path: 'home-doctor', component: HomeDoctor},
-    { path: 'home-private', component: HomePrivate},
-    { path: 'register', component: Register},
-    { path: 'profile', component: Profile},
-    { path: 'register-doctor', component: RegisterDoctor},
-    { path: 'appointments-user', component: AppointmentsUser},
-    { path: 'appointments-doctor', component: AppointmentsDoctor },
-    { path: 'appointments-new', component: AppointmentsNew},
-    { path: 'profile-doctor', component: ProfileDoctor},
-    { path: 'create-formula', component: FormulaNew},
-    { path: '**', redirectTo: 'home-public' },
+    { path: 'login', component: Login, canActivate: [AuthenticatedGuard]},
+    { path: 'home-public', component: HomePublic, canActivate: [AuthenticatedGuard]},
+    { path: 'home-doctor', component: HomeDoctor, canActivate: [DoctorGuard]},
+    { path: 'home-private', component: HomePrivate, canActivate: [AuthGuard]},
+    { path: 'register', component: Register, canActivate: [AuthenticatedGuard]},
+    { path: 'profile', component: Profile, canActivate: [AuthGuard]},
+    { path: 'register-doctor', component: RegisterDoctor, canActivate: [DoctorGuard]},
+    { path: 'appointments-user', component: AppointmentsUser, canActivate: [AuthGuard]},
+    { path: 'appointments-doctor', component: AppointmentsDoctor, canActivate: [DoctorGuard]},
+    { path: 'appointments-new', component: AppointmentsNew, canActivate: [AuthGuard]},
+    { path: 'profile-doctor', component: ProfileDoctor, canActivate: [DoctorGuard]},
+    { path: 'create-formula', component: FormulaNew, canActivate: [DoctorGuard]},
+    { path: '**', redirectTo: 'home-public'},
 ];
