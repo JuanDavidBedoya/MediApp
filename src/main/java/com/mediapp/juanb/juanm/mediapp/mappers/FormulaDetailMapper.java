@@ -1,5 +1,7 @@
 package com.mediapp.juanb.juanm.mediapp.mappers;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import com.mediapp.juanb.juanm.mediapp.dtos.FormulaDetailRequestDTO;
@@ -25,13 +27,13 @@ public class FormulaDetailMapper {
     public FormulaDetail toEntity(FormulaDetailRequestDTO dto) {
         if (dto == null) return null;
         FormulaDetail entity = new FormulaDetail();
-        
+
         Formula formula = formulaRepository.findById(dto.formulaId())
             .orElseThrow(() -> new ResourceNotFoundException("Fórmula no encontrada con ID: " + dto.formulaId()));
         entity.setFormula(formula);
-        
-        Medication medication = medicationRepository.findByName(dto.name())
-            .orElseThrow(() -> new ResourceNotFoundException("Medicamento no encontrado con nombre: " + dto.name()));
+
+        Medication medication = medicationRepository.findById(UUID.fromString(dto.medicationId()))
+            .orElseThrow(() -> new ResourceNotFoundException("Medicamento no encontrado con ID: " + dto.medicationId()));
         entity.setMedication(medication);
 
         entity.setQuantity(dto.quantity());

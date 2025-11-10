@@ -1,22 +1,19 @@
-export interface FormulaItemDTO {
-    medicationName: string;
-    quantity: string;
-    instructions: string;
+export interface FormulaMedicationDTO {
+    name: string;
+    quantity: number;
+    dosage: string;
 }
 
-export interface FormulaRequestDTO {
-    doctorCedula: string;
-    patientCedula: string;
-    appointmentId: string;
-    diagnostic: string;
-    formulaItems: FormulaItemDTO[];
+export interface FormulaDetailsBulkRequestDTO {
+    formulaId: string;
+    medications: FormulaMedicationDTO[];
 }
 
 export interface FormulaResponseDTO {
     idPrescription: string;
     doctorCedula: string;
     patientCedula: string;
-    date: string; 
+    date: string;
     diagnostic: string;
-    items: FormulaItemDTO[];
+    items: FormulaMedicationDTO[];
 }

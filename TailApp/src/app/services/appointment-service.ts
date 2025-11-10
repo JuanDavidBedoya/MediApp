@@ -62,4 +62,8 @@ export class AppointmentService {
     }
     return this.http.get<AppointmentResponseDTO[]>(`${this.apiUrl}/appointments/doctor`, { params });
   }
+
+  createFormula(formulaRequest: { appointmentId: string; date: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/formulas`, formulaRequest);
+  }
 }

@@ -38,7 +38,7 @@ public class FormulaDetailService {
 
     public FormulaDetailResponseDTO save(FormulaDetailRequestDTO requestDTO) {
         formulaDetailRepository.findByFormulaIdFormulaAndMedicationName(
-            requestDTO.formulaId(), requestDTO.name())
+            requestDTO.formulaId(), requestDTO.medicationId())
             .ifPresent(detail -> {
                 throw new IllegalArgumentException("El medicamento ya está listado en esta fórmula.");
             });
@@ -72,10 +72,11 @@ public class FormulaDetailService {
                 System.out.println("🔍 Procesando medicamento: " + medDTO.name());
                 
                 // Verificar que el medicamento existe
+                System.out.println("🔍 Buscando medicamento por nombre: '" + medDTO.name() + "'");
                 Medication medication = medicationRepository.findByName(medDTO.name())
                     .orElseThrow(() -> {
-                        System.out.println("❌ Medicamento no encontrado: " + medDTO.name());
-                        return new ResourceNotFoundException("Medicamento no encontrado con ID: " + medDTO.name());
+                        System.out.println("❌ Medicamento no encontrado: '" + medDTO.name() + "'");
+                        return new ResourceNotFoundException("Medicamento no encontrado: " + medDTO.name());
                     });
 
                 System.out.println("✅ Medicamento encontrado: " + medication.getName());
@@ -127,8 +128,8 @@ public class FormulaDetailService {
         FormulaDetail existingDetail = formulaDetailRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Detalle de Fórmula no encontrado con ID: " + id));
 
-        if (!existingDetail.getFormula().getIdFormula().equals(requestDTO.formulaId()) || 
-            !existingDetail.getMedication().getName().equals(requestDTO.name())) {
+        if (!existingDetail.getFormula().getIdFormula().equals(requestDTO.formulaId()) ||
+            !existingDetail.getMedication().getIdMedication().toString().equals(requestDTO.medicationId())) {
             throw new IllegalArgumentException("No se permite cambiar la fórmula o el medicamento en un detalle de fórmula existente. Debe eliminar y crear uno nuevo.");
         }
 

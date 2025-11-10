@@ -1,4 +1,4 @@
 export interface MedicationDTO {
-    id: number;
+    id: string;
     name: string;
 }

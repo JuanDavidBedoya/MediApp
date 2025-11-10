@@ -76,17 +76,40 @@ export class AppointmentsDoctor implements OnInit {
 
   onDateChange(event: Event): void {
     const date = (event.target as HTMLInputElement).value;
-    console.log('Fecha seleccionada en frontend:', date);
     this.customDate.set(date);
     this.errorMessage.set(null);
   }
 
+  clearFilters(): void {
+    this.filterType.set('TODAY');
+    this.customDate.set(this.getCurrentDateISO());
+    this.errorMessage.set(null);
+  }
+
   goToCreateFormula(appointment: AppointmentResponseDTO): void {
-    this.router.navigate(['/create-prescription'], {
-      queryParams: {
-        patientCedula: appointment.patientCedula,
-        appointmentId: appointment.idAppointment,
+    // Primero crear la fórmula básica
+    const formulaRequest = {
+      appointmentId: appointment.idAppointment,
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    // Llamar al servicio para crear la fórmula
+    this.appointmentService.createFormula(formulaRequest).subscribe({
+      next: (formulaResponse: any) => {
+        console.log('Fórmula creada:', formulaResponse);
+        // Redirigir a la página de fórmula con el ID de la fórmula creada
+        this.router.navigate(['/create-formula'], {
+          queryParams: {
+            patientCedula: appointment.patientCedula,
+            appointmentId: appointment.idAppointment,
+            formulaId: formulaResponse.idFormula
+          },
+        });
       },
+      error: (error) => {
+        console.error('Error creando fórmula:', error);
+        this.errorMessage.set('Error al crear la fórmula. Intente nuevamente.');
+      }
     });
   }
 

@@ -6,7 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { FormulaService } from '../../services/formula-service';
 import { AuthService } from '../../services/auth';
-import { FormulaRequestDTO, FormulaItemDTO } from '../../interfaces/formulaDTO';
+import { FormulaMedicationDTO } from '../../interfaces/formulaDTO';
 import { MedicationDTO } from '../../interfaces/medicationDTO';
 
 @Component({
@@ -24,14 +24,15 @@ export class FormulaNew implements OnInit {
     doctorCedula: string | null = null;
     patientCedula: string | null = null;
     appointmentId: string | null = null;
+    formulaId: string | null = null;
 
-    formulaData: Partial<FormulaRequestDTO> = {
-        diagnostic: '',
-    };
+    diagnostic: string = '';
 
-    formulaItems: FormulaItemDTO[] = [
-        { medicationName: '', quantity: '', instructions: '' },
+    medications: FormulaMedicationDTO[] = [
+        { name: '', quantity: 1, dosage: '' },
     ];
+
+    selectedMedications: { id: string; name: string }[] = [];
 
     medicationsResource = resource({
         loader: () => (this.formulaService.getMedications().toPromise() as Promise<MedicationDTO[]>),
@@ -56,9 +57,10 @@ export class FormulaNew implements OnInit {
         this.route.queryParams.subscribe(params => {
             this.patientCedula = params['patientCedula'] || null;
             this.appointmentId = params['appointmentId'] || null;
+            this.formulaId = params['formulaId'] || null;
 
-            if (!this.patientCedula || !this.appointmentId) {
-                this.submissionMessage = { type: 'error', text: 'Faltan datos de paciente o cita. No se puede crear la prescripción.' };
+            if (!this.patientCedula || !this.appointmentId || !this.formulaId) {
+                this.submissionMessage = { type: 'error', text: 'Faltan datos de paciente, cita o fórmula. No se puede crear la prescripción.' };
                 this.isLoadingInitial = false;
                 return;
             }
@@ -67,58 +69,70 @@ export class FormulaNew implements OnInit {
         });
     }
 
-    agregarItem(): void {
-        this.formulaItems.push({ medicationName: '', quantity: '', instructions: '' });
+    agregarMedicamento(): void {
+        this.medications.push({ name: '', quantity: 1, dosage: '' });
     }
 
-    eliminarItem(index: number): void {
-        if (this.formulaItems.length > 1) {
-            this.formulaItems.splice(index, 1);
+    eliminarMedicamento(index: number): void {
+        if (this.medications.length > 1) {
+            this.medications.splice(index, 1);
+            this.selectedMedications.splice(index, 1);
         }
     }
 
-    trackByIndex(index: number, item: any): any {
-        return index;
+    isMedicationSelected(medicationName: string, currentIndex: number): boolean {
+        return this.selectedMedications.some((item, index) =>
+            index !== currentIndex && item.name === medicationName
+        );
     }
 
-    createFormula(): void {
-        if (this.isSubmitting || !this.doctorCedula || !this.patientCedula || !this.appointmentId) return;
+    onMedicationChange(event: Event, index: number): void {
+        const selectElement = event.target as HTMLSelectElement;
+        const selectedName = selectElement.value;
+        const selectedMed = this.medicationsResource.value()?.find(med => med.name === selectedName);
+        if (selectedMed) {
+            this.medications[index].name = selectedMed.name;
+            this.selectedMedications[index] = { id: selectedMed.id, name: selectedMed.name };
+        }
+    }
 
-        const validItems = this.formulaItems.filter(
-            item => item.medicationName && item.medicationName.trim() !== ''
+    async createFormula(): Promise<void> {
+        if (this.isSubmitting || !this.doctorCedula || !this.patientCedula || !this.appointmentId || !this.formulaId) return;
+
+        const validMedications = this.medications.filter(
+            med => med.name && med.name.trim() !== '' &&
+                   med.quantity > 0 && med.dosage && med.dosage.trim() !== ''
         );
 
-        if (!this.formulaData.diagnostic || validItems.length === 0) {
-            this.submissionMessage = { type: 'error', text: 'Debes ingresar un diagnóstico y al menos un medicamento válido.' };
+        if (validMedications.length === 0) {
+            this.submissionMessage = { type: 'error', text: 'Debes ingresar al menos un medicamento válido.' };
             return;
         }
 
         this.isSubmitting = true;
         this.submissionMessage = null;
 
-        const payload: FormulaRequestDTO = {
-            doctorCedula: this.doctorCedula,
-            patientCedula: this.patientCedula,
-            appointmentId: this.appointmentId,
-            diagnostic: this.formulaData.diagnostic!,
-            formulaItems: validItems,
+        // Preparar el payload bulk según el formato requerido
+        const bulkPayload = {
+            formulaId: this.formulaId,
+            medications: validMedications
         };
 
-        this.formulaService.createFormula(payload).subscribe(
-            (response: any) => {
-                this.isSubmitting = false;
-                this.submissionMessage = {
-                    type: 'success',
-                    text: `¡Prescripción No. ${response.idFormula} creada con éxito!`,
-                };
-            },
-            (err: HttpErrorResponse) => {
-                this.isSubmitting = false;
-                const errorMsg =
-                    err.error?.message ||
-                    'Hubo un error al crear la prescripción. Verifica los datos o el estado de la cita.';
-                this.submissionMessage = { type: 'error', text: errorMsg };
-            }
-        );
+        try {
+            await this.formulaService.createFormulaDetailsBulk(bulkPayload).toPromise();
+            this.submissionMessage = {
+                type: 'success',
+                text: `¡Prescripción médica creada con éxito! Se agregaron ${validMedications.length} medicamentos.`,
+            };
+            setTimeout(() => this.router.navigate(['/appointments-doctor']), 3000);
+        } catch (error: any) {
+            console.error('Error creando detalles de fórmula:', error);
+            this.submissionMessage = {
+                type: 'error',
+                text: `Error al crear la prescripción: ${error.error?.message || 'Error desconocido'}`
+            };
+        } finally {
+            this.isSubmitting = false;
+        }
     }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environment';
-import { FormulaRequestDTO, FormulaResponseDTO } from '../interfaces/formulaDTO';
+import { FormulaResponseDTO } from '../interfaces/formulaDTO';
 import { MedicationDTO } from '../interfaces/medicationDTO';
 
 @Injectable({
@@ -20,11 +20,29 @@ export class FormulaService {
     }
 
     createFormula(
-        request: FormulaRequestDTO
+        request: any
     ): Observable<FormulaResponseDTO> {
         return this.http.post<FormulaResponseDTO>(
             this.formulaApiUrl,
             request
+        );
+    }
+
+    createFormulaDetail(
+        detailRequest: { formulaId: string; medicationId: string; quantity: number; dosage: string }
+    ): Observable<any> {
+        return this.http.post(
+            `${this.apiUrl}/formula-details`,
+            detailRequest
+        );
+    }
+
+    createFormulaDetailsBulk(
+        bulkRequest: { formulaId: string; medications: { name: string; quantity: number; dosage: string }[] }
+    ): Observable<any> {
+        return this.http.post(
+            `${this.apiUrl}/formula-details/bulk`,
+            bulkRequest
         );
     }
 }
